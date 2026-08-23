@@ -27,6 +27,24 @@ precisar reconstruir o contexto do zero.
   objetivo é manter os três (GitHub, Vercel, Supabase) sincronizados.
 - **Identidade visual**: paleta oficial PWR (laranja/azul escuro/branco), sem
   verde/amarelo/roxo/rosa.
+- **Deploy inicial feito** (23/08/2026): push para GitHub (merge sem force-push com o
+  placeholder inicial), projeto Vercel linkado, env vars do Supabase configuradas em
+  production/preview/development, deploy de produção validado. `npm run dev` local
+  confirma os mesmos números batendo com o Supabase (1653 contratos; Ativo 333 /
+  Inativo 1212 / Stand By 33 / Cancelado 66 / Pendente 9; Fortaleza 1051 / ACG 305 /
+  São Paulo 250 / Sem informação 47).
+- **Proteção do deploy**: o projeto Vercel tem `ssoProtection: all_except_custom_domains`
+  — só quem tem acesso ao time `victorgomes-8807s-projects` no Vercel abre
+  `cockpit-contratos.vercel.app`. Isso substitui a necessidade de login na própria
+  aplicação por enquanto (uso interno). Se um dia precisar liberar para mais gente sem
+  dar acesso ao time Vercel, revisar essa proteção ou adicionar autenticação na
+  aplicação.
+- **Risco confirmado do Drive**: `npm install` direto na pasta sincronizada corrompeu
+  arquivos duas vezes (`ENOTEMPTY`, `Invalid package config`) — não é intermitente.
+  Solução usada: instalar em pasta local temporária e copiar com `robocopy /E /R:5 /W:2`
+  (tem retry automático, ao contrário de `mv`/`cp`). Se precisar reinstalar
+  dependências no futuro, repetir esse processo em vez de rodar `npm install` direto
+  na pasta do Drive.
 
 ## Em aberto (não decidir sozinho — esperar o usuário)
 
