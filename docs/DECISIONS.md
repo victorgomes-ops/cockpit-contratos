@@ -33,12 +33,29 @@ precisar reconstruir o contexto do zero.
   confirma os mesmos números batendo com o Supabase (1653 contratos; Ativo 333 /
   Inativo 1212 / Stand By 33 / Cancelado 66 / Pendente 9; Fortaleza 1051 / ACG 305 /
   São Paulo 250 / Sem informação 47).
-- **Proteção do deploy**: o projeto Vercel tem `ssoProtection: all_except_custom_domains`
-  — só quem tem acesso ao time `victorgomes-8807s-projects` no Vercel abre
-  `cockpit-contratos.vercel.app`. Isso substitui a necessidade de login na própria
-  aplicação por enquanto (uso interno). Se um dia precisar liberar para mais gente sem
-  dar acesso ao time Vercel, revisar essa proteção ou adicionar autenticação na
-  aplicação.
+- **Proteção do deploy** (revisado em 15/09/2026): a proteção SSO da Vercel foi
+  **desativada** e substituída por um gate de senha na própria aplicação
+  (`proxy.ts` + cookie, variável `COCKPIT_AUTH_TOKEN`). Motivo: o SSO da Vercel
+  atrapalhava o diagnóstico e nem o dono do projeto conseguia passar por ele. A senha
+  fica nas variáveis de ambiente do Vercel (production/preview/development) e no
+  `.env.local`.
+
+- **CAUSA RAIZ do 404 que durou de 23/08 a 15/09** (importante, não repetir): o projeto
+  na Vercel foi criado quando o repositório do GitHub só tinha um `README.md`, sem
+  código. A detecção automática de framework não achou nada e travou em
+  `Framework Preset: Other` com `Output Directory: public`. Resultado: a Vercel
+  compilava o Next.js corretamente (logs de build perfeitos, todas as rotas listadas) e
+  depois **descartava** esse resultado, servindo apenas os SVGs estáticos da pasta
+  `public/` — 404 em todas as rotas. Corrigido com `vercel.json` contendo
+  `{"framework": "nextjs"}`. **Lição**: ao conectar um projeto Vercel criado antes do
+  código existir, sempre conferir `vercel project inspect` e validar o Framework Preset.
+- **Next.js 16 renomeou `middleware.ts` para `proxy.ts`** (função exportada `proxy`, não
+  `middleware`). O `middleware.ts` ainda compila, mas roda pelo caminho legado de edge
+  middleware e quebra em produção com `ReferenceError: __dirname is not defined`. O
+  `proxy.ts` roda no runtime Node.js. A documentação da versão instalada está em
+  `node_modules/next/dist/docs/` — **ler antes de escrever código**, como o `AGENTS.md`
+  do projeto instrui.
+
 - **Risco confirmado do Drive**: `npm install` direto na pasta sincronizada corrompeu
   arquivos duas vezes (`ENOTEMPTY`, `Invalid package config`) — não é intermitente.
   Solução usada: instalar em pasta local temporária e copiar com `robocopy /E /R:5 /W:2`
