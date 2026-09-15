@@ -12,6 +12,10 @@ const links = [
 export function NavBar() {
   const pathname = usePathname();
 
+  if (pathname === "/login") {
+    return null;
+  }
+
   return (
     <header className="bg-pwr-dark-blue">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
