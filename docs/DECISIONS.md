@@ -63,6 +63,37 @@ precisar reconstruir o contexto do zero.
   dependências no futuro, repetir esse processo em vez de rodar `npm install` direto
   na pasta do Drive.
 
+## Regras de negócio confirmadas pelo Victor (15/09/2026)
+
+Sobre as datas da planilha `Contratos.xlsx` — são três conceitos distintos, não
+alternativas entre si:
+
+| Conceito | Campo da planilha |
+|---|---|
+| Quando o projeto **renova** | `Data de Renovação` |
+| Quando o projeto **encerra** | `Data Término Vendido` |
+| Quando o projeto **entra** | `Data Entrada` |
+
+Aplicado em: aba **Renovações** (renovam no mês + encerram no mês) e aba **Controle de
+Projetos** (entradas no mês). Filtros de mês e `Projeto Interno` via query string.
+
+**Pipeline de dados**: `npm run sync` (script PowerShell em `scripts/sync-contratos.ps1`)
+lê a planilha das Bases SPWR e grava `data/contratos.json` com 16 campos selecionados.
+O JSON é commitado e vai junto no deploy. Nada é escrito no Supabase. Escolhido esse
+caminho porque (a) o Supabase é compartilhado e só de leitura, (b) instalar pacotes npm
+nesta pasta do Drive corrompe arquivos.
+
+**Cuidado ao editar o script**: o PowerShell 5.1 lê `.ps1` como ANSI quando o arquivo não
+tem BOM, o que corrompe os acentos do caminho das Bases SPWR. O arquivo precisa ficar
+salvo em UTF-8 **com BOM**.
+
+**Formato da planilha mudou**: desde setembro/2026 o `Contratos.xlsx` usa `inlineStr`
+(texto embutido na célula) em vez de `sharedStrings`. O parser trata os dois formatos.
+
+**Valores monetários** são mantidos como texto, exatamente como vêm da planilha (`$17,000.00`,
+às vezes `R$ 0,00`), porque o export mistura formatos — reformatar arriscaria exibir
+número errado.
+
 ## Em aberto (não decidir sozinho — esperar o usuário)
 
 - **Estratégia de ingestão completa**: como trazer os 50 campos de `Contratos.xlsx` e

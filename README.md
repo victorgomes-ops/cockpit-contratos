@@ -27,6 +27,22 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 
 (veja `.env.example`; a chave é a publishable key do projeto Supabase, obtida via MCP).
 
+## Atualizando os dados (o que fazer quando a planilha mudar)
+
+As abas **Renovações** e **Controle de Projetos** leem `data/contratos.json`, gerado a
+partir de `Contratos.xlsx`. Quando você atualizar a planilha nas Bases SPWR:
+
+```bash
+npm run sync
+git add data/contratos.json
+git commit -m "Atualiza base de contratos"
+git push
+```
+
+O push dispara o deploy automático e o cockpit passa a mostrar os dados novos. O script
+não escreve nada no Supabase e não instala dependências (é PowerShell puro, roda só no
+Windows).
+
 ## Fontes de dados
 
 - **Hoje**: `base_dados` (tabela genérica do Supabase, `tipo`/`dados jsonb`), registro
