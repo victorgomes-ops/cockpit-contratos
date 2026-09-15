@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 const COOKIE_NAME = "cockpit_auth";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const cookie = request.cookies.get(COOKIE_NAME)?.value;
   if (cookie && cookie === process.env.COCKPIT_AUTH_TOKEN) {
     return NextResponse.next();
