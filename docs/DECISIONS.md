@@ -77,6 +77,26 @@ alternativas entre si:
 Aplicado em: aba **Renovações** (renovam no mês + encerram no mês) e aba **Controle de
 Projetos** (entradas no mês). Filtros de mês e `Projeto Interno` via query string.
 
+### Renovações — mecânica descoberta em 22/10/2026 (importante)
+
+**Ao renovar um contrato, a planilha empurra o `Data Término Vendido` para a frente**
+(o Victor aumenta parcelas e duração). Consequência: o projeto renovado **sai** da lista
+de "vencendo no mês". Medido em out/2026: 26 com término no mês, 15 renovados no mês,
+**interseção zero**.
+
+Por isso:
+- O **potencial de renovação do mês** = (a renovar) + (renovados), não só os que vencem.
+- `Taxa de renovação = renovados ÷ (a renovar + renovados)`. Em out/26: 15 ÷ 41 = 36,6%.
+- A fórmula ingênua (renovados ÷ vencendo = 15 ÷ 26 = 57,7%) divide conjuntos disjuntos.
+
+**Indicador financeiro usa `Receita Recorrente Anual`, nunca `Valor Total`.** O
+`Valor Total` e a `Duração Vendida` são **acumulados desde a entrada do contrato** e são
+estendidos a cada renovação — não isolam o valor da renovação em si. Evidência: "Atra,
+Viva e Titan - ACG", entrada em 2021, duração 60 meses, Valor Total $450.000. Usando
+`Valor Total` a taxa por valor dava **261,8%** (impossível). Com Receita Recorrente
+Anual dá 62,3%, coerente. A base **não guarda o valor incremental de uma renovação** —
+se um dia isso for necessário, precisa de campo novo na planilha.
+
 **Pipeline de dados**: `npm run sync` (script PowerShell em `scripts/sync-contratos.ps1`)
 lê a planilha das Bases SPWR e grava `data/contratos.json` com 16 campos selecionados.
 O JSON é commitado e vai junto no deploy. Nada é escrito no Supabase. Escolhido esse
