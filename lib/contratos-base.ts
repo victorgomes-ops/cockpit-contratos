@@ -121,6 +121,76 @@ export function filtrarPorMes(
     .sort((a, b) => diaDe(a[campo]) - diaDe(b[campo]));
 }
 
+function partesData(data: string): { dia: number; mes: number; ano: number } | null {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(data ?? "");
+  return m ? { dia: Number(m[1]), mes: Number(m[2]), ano: Number(m[3]) } : null;
+}
+
+// Diferenca em meses de calendario. Usada para derivar quantas parcelas uma
+// renovacao acrescentou, ja que a planilha nao guarda esse numero: ela so
+// atualiza o acumulado em Parcelas Vendidas.
+export function mesesEntre(inicio: string, fim: string): number {
+  const a = partesData(inicio);
+  const b = partesData(fim);
+  if (!a || !b) return 0;
+  const n = (b.ano - a.ano) * 12 + (b.mes - a.mes);
+  return n > 0 ? n : 0;
+}
+
+export function parcelasRenovadas(contrato: ContratoBase): number {
+  return mesesEntre(contrato.dataRenovacao, contrato.dataTerminoVendido);
+}
+
+// Valor por parcela = Valor Total / Duracao Vendida. Os dois sao acumulados da
+// vida inteira do contrato, entao a razao entre eles e um valor mensal valido.
+export function valorDaParcela(contrato: ContratoBase): number {
+  const duracao = Number((contrato.duracaoVendida ?? "").replace(/[^\d.]/g, ""));
+  if (!Number.isFinite(duracao) || duracao <= 0) return 0;
+  return valorNumerico(contrato.valorTotal) / duracao;
+}
+
+export function valorRenovado(contrato: ContratoBase): number {
+  return valorDaParcela(contrato) * parcelasRenovadas(contrato);
+}
+
+export type ResumoMes = {
+  mes: string;
+  renovacoes: number;
+  parcelas: number;
+  valor: number;
+};
+
+export function resumoDoMes(
+  mes: string,
+  interno: FiltroInterno = "todos",
+  status: string = "todos"
+): ResumoMes {
+  const renovados = filtrarPorMes("dataRenovacao", mes, interno, status);
+  return {
+    mes,
+    renovacoes: renovados.length,
+    parcelas: renovados.reduce((t, c) => t + parcelasRenovadas(c), 0),
+    valor: renovados.reduce((t, c) => t + valorRenovado(c), 0),
+  };
+}
+
+export function mesAnterior(mes: string, passos: number): string {
+  const [ano, m] = mes.split("-").map(Number);
+  const data = new Date(ano, m - 1 - passos, 1);
+  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function serieMensal(
+  mesFinal: string,
+  quantidade: number,
+  interno: FiltroInterno = "todos",
+  status: string = "todos"
+): ResumoMes[] {
+  return Array.from({ length: quantidade }, (_, i) =>
+    resumoDoMes(mesAnterior(mesFinal, i), interno, status)
+  );
+}
+
 export type IndicadoresRenovacao = {
   aRenovar: number;
   renovados: number;

@@ -20,30 +20,45 @@ type Definicao = {
   titulo: string;
   tipo: "texto" | "data" | "numero" | "dinheiro";
   valor: (c: ContratoBase) => string;
+  // Colunas de texto livre truncam para caber; o valor completo fica no title.
+  largura?: string;
+  alinharDireita?: boolean;
 };
 
 const DEFINICOES: Record<ChaveColuna, Definicao> = {
-  nome: { titulo: "Projeto", tipo: "texto", valor: (c) => c.nome },
-  cliente: { titulo: "Cliente", tipo: "texto", valor: (c) => c.cliente },
+  nome: { titulo: "Projeto", tipo: "texto", valor: (c) => c.nome, largura: "max-w-[170px]" },
+  cliente: { titulo: "Cliente", tipo: "texto", valor: (c) => c.cliente, largura: "max-w-[130px]" },
   parcelasVendidas: {
-    titulo: "Parcelas",
+    titulo: "Parc.",
     tipo: "numero",
     valor: (c) => c.parcelasVendidas.replace(/\.0$/, ""),
+    alinharDireita: true,
   },
   dataTerminoVendido: {
-    titulo: "Término Vendido",
+    titulo: "Término",
     tipo: "data",
     valor: (c) => c.dataTerminoVendido,
   },
-  dataRenovacao: { titulo: "Renovado em", tipo: "data", valor: (c) => c.dataRenovacao },
+  dataRenovacao: { titulo: "Renovado", tipo: "data", valor: (c) => c.dataRenovacao },
   status: { titulo: "Status", tipo: "texto", valor: (c) => c.status },
-  gerenteProjeto: { titulo: "Gerente", tipo: "texto", valor: (c) => c.gerenteProjeto },
-  scrumMaster: { titulo: "Scrum", tipo: "texto", valor: (c) => c.scrumMaster },
+  gerenteProjeto: {
+    titulo: "Gerente",
+    tipo: "texto",
+    valor: (c) => c.gerenteProjeto,
+    largura: "max-w-[110px]",
+  },
+  scrumMaster: {
+    titulo: "Scrum",
+    tipo: "texto",
+    valor: (c) => c.scrumMaster,
+    largura: "max-w-[110px]",
+  },
   unidade: { titulo: "Unidade", tipo: "texto", valor: (c) => c.unidade },
   receitaRecorrente: {
-    titulo: "Receita Recorrente",
+    titulo: "Rec. Anual",
     tipo: "dinheiro",
     valor: (c) => c.receitaRecorrente,
+    alinharDireita: true,
   },
 };
 
@@ -104,28 +119,31 @@ export function TabelaOrdenavel({
 
   if (contratos.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-pwr-dark-blue/15 px-4 py-10 text-center text-sm text-pwr-blue/50">
+      <p className="rounded-lg border border-dashed border-pwr-dark-blue/15 px-4 py-8 text-center text-xs text-pwr-blue/45">
         {vazio}
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-pwr-dark-blue/10">
-      <table className="min-w-full divide-y divide-pwr-dark-blue/10 text-sm">
-        <thead className="bg-pwr-dark-blue text-white">
+    <div className="overflow-x-auto rounded-lg border border-pwr-dark-blue/10 bg-white">
+      <table className="min-w-full text-[12px]">
+        <thead className="border-b border-pwr-dark-blue/10 bg-pwr-dark-blue/[0.03]">
           <tr>
             {colunas.map((coluna) => {
+              const def = DEFINICOES[coluna];
               const ativa = coluna === ordenarPor;
               return (
                 <th key={coluna} className="whitespace-nowrap">
                   <button
                     type="button"
                     onClick={() => alternar(coluna)}
-                    className="flex w-full items-center gap-1 px-3 py-2 text-left text-xs font-semibold tracking-wide uppercase hover:text-pwr-orange"
+                    className={`flex w-full items-center gap-1 px-2 py-1.5 text-[10px] font-semibold tracking-wide uppercase hover:text-pwr-orange ${
+                      def.alinharDireita ? "justify-end" : "text-left"
+                    } ${ativa ? "text-pwr-orange" : "text-pwr-blue/55"}`}
                   >
-                    {DEFINICOES[coluna].titulo}
-                    <span className={ativa ? "text-pwr-orange" : "text-white/30"}>
+                    {def.titulo}
+                    <span className={ativa ? "" : "text-pwr-blue/20"}>
                       {ativa ? (crescente ? "▲" : "▼") : "↕"}
                     </span>
                   </button>
@@ -136,12 +154,22 @@ export function TabelaOrdenavel({
         </thead>
         <tbody className="divide-y divide-pwr-dark-blue/5">
           {ordenados.map((contrato, i) => (
-            <tr key={`${contrato.nome}-${i}`} className="hover:bg-pwr-orange/5">
-              {colunas.map((coluna) => (
-                <td key={coluna} className="px-3 py-2 whitespace-nowrap text-pwr-blue/80">
-                  {DEFINICOES[coluna].valor(contrato) || "—"}
-                </td>
-              ))}
+            <tr key={`${contrato.nome}-${i}`} className="hover:bg-pwr-orange/[0.04]">
+              {colunas.map((coluna) => {
+                const def = DEFINICOES[coluna];
+                const texto = def.valor(contrato) || "—";
+                return (
+                  <td
+                    key={coluna}
+                    title={texto}
+                    className={`truncate px-2 py-1.5 text-pwr-blue/75 ${def.largura ?? "whitespace-nowrap"} ${
+                      def.alinharDireita ? "text-right tabular-nums" : ""
+                    }`}
+                  >
+                    {texto}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

@@ -37,29 +37,24 @@ export default async function ProjetosPage({
   const externos = entradas.length - internos;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="text-2xl font-semibold text-pwr-dark-blue">Controle de Projetos</h1>
-      <p className="mt-1 text-sm text-pwr-blue/60">
-        {rotuloMes(mes)} — base atualizada em{" "}
-        {new Date(base.gerado).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}.
+    <div className="px-6 py-6">
+      <h1 className="text-lg font-semibold text-pwr-dark-blue">Controle de Projetos</h1>
+      <p className="mt-0.5 text-xs text-pwr-blue/50">
+        {rotuloMes(mes)} — base de {new Date(base.gerado).toLocaleDateString("pt-BR")}.
       </p>
 
-      <div className="mt-6">
+      <div className="mt-4">
         <FiltrosMes mes={mes} interno={interno} />
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard
-          label="Entradas no mês"
-          value={entradas.length}
-          hint="Contratos com Data Entrada no mês selecionado"
-        />
+      <div className="mt-4 grid grid-cols-3 gap-2.5 lg:max-w-2xl">
+        <StatCard label="Entradas no mês" value={entradas.length} hint="Data Entrada no mês" />
         <StatCard label="Externos" value={externos} />
         <StatCard label="Internos" value={internos} />
       </div>
 
-      <h2 className="mt-10 text-lg font-semibold text-pwr-dark-blue">Entradas no mês</h2>
-      <div className="mt-4">
+      <h2 className="mt-6 mb-2 text-[13px] font-semibold text-pwr-dark-blue">Entradas no mês</h2>
+      <div>
         <TabelaContratos
           contratos={entradas}
           colunas={colunasEntrada}
