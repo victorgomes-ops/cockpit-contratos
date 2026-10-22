@@ -1,3 +1,4 @@
+import { CabecalhoTabela } from "@/components/CabecalhoTabela";
 import { FiltrosMes } from "@/components/FiltrosMes";
 import { IndicadorTaxa } from "@/components/IndicadorTaxa";
 import { StatCard } from "@/components/StatCard";
@@ -23,6 +24,7 @@ const colunasARenovar: ChaveColuna[] = [
   "gerenteProjeto",
   "scrumMaster",
   "unidade",
+  "parcelaFechada",
   "receitaRecorrente",
 ];
 
@@ -34,6 +36,7 @@ const colunasRenovados: ChaveColuna[] = [
   "gerenteProjeto",
   "scrumMaster",
   "unidade",
+  "parcelaFechada",
   "receitaRecorrente",
 ];
 
@@ -94,12 +97,12 @@ export default async function RenovacoesPage({
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
         <section className="min-w-0">
-          <div className="mb-2 flex items-baseline justify-between gap-2">
-            <h2 className="text-[13px] font-semibold text-pwr-dark-blue">
-              A renovar em {rotuloMes(mes).toLowerCase()}
-            </h2>
-            <span className="text-[11px] text-pwr-blue/40">{aRenovar.length} projetos</span>
-          </div>
+          <CabecalhoTabela
+            titulo={`A renovar em ${rotuloMes(mes).toLowerCase()}`}
+            projetos={aRenovar.length}
+            valor={formatarMoeda(parcelaARenovar)}
+            rotuloValor="parcela"
+          />
           <TabelaOrdenavel
             contratos={aRenovar}
             colunas={colunasARenovar}
@@ -109,12 +112,12 @@ export default async function RenovacoesPage({
         </section>
 
         <section className="min-w-0">
-          <div className="mb-2 flex items-baseline justify-between gap-2">
-            <h2 className="text-[13px] font-semibold text-pwr-dark-blue">
-              Renovados em {rotuloMes(mes).toLowerCase()}
-            </h2>
-            <span className="text-[11px] text-pwr-blue/40">{renovados.length} projetos</span>
-          </div>
+          <CabecalhoTabela
+            titulo={`Renovados em ${rotuloMes(mes).toLowerCase()}`}
+            projetos={renovados.length}
+            valor={formatarMoeda(parcelaRenovada)}
+            rotuloValor="parcela"
+          />
           <TabelaOrdenavel
             contratos={renovados}
             colunas={colunasRenovados}
