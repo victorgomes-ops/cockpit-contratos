@@ -50,9 +50,9 @@ export function ContratosTable({ contratos }: { contratos: ContratoResumo[] }) {
         </span>
       </div>
 
-      <div className="mt-4 max-h-[70vh] overflow-auto rounded-xl border border-pwr-dark-blue/10">
-        <table className="min-w-full divide-y divide-pwr-dark-blue/10 text-sm">
-          <thead className="sticky top-0 bg-pwr-dark-blue text-white">
+      <div className="mt-3 max-h-[75vh] overflow-auto rounded-md border border-pwr-dark-blue/10 bg-white">
+        <table className="min-w-full text-center text-[11.5px]">
+          <thead className="sticky top-0 border-b border-pwr-dark-blue/10 bg-[#eef0f4]">
             <tr>
               <Th>Contrato</Th>
               <Th>Cliente</Th>
@@ -84,12 +84,12 @@ export function ContratosTable({ contratos }: { contratos: ContratoResumo[] }) {
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-3 py-2 text-left text-xs font-semibold tracking-wide uppercase">
+    <th className="px-1.5 py-1 text-[9.5px] font-semibold tracking-wide text-pwr-blue/55 uppercase whitespace-nowrap">
       {children}
     </th>
   );
 }
 
 function Td({ children }: { children: React.ReactNode }) {
-  return <td className="px-3 py-2 text-pwr-blue/80">{children}</td>;
+  return <td className="px-1.5 py-[3px] whitespace-nowrap text-pwr-blue/75">{children}</td>;
 }

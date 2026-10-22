@@ -11,13 +11,13 @@ import {
   normalizarMes,
   normalizarStatus,
   rotuloMes,
+  somarParcelaFechada,
   statusDisponiveis,
 } from "@/lib/contratos-base";
 
 const colunasARenovar: ChaveColuna[] = [
   "nome",
   "cliente",
-  "parcelasVendidas",
   "dataTerminoVendido",
   "status",
   "gerenteProjeto",
@@ -29,7 +29,6 @@ const colunasARenovar: ChaveColuna[] = [
 const colunasRenovados: ChaveColuna[] = [
   "nome",
   "cliente",
-  "parcelasVendidas",
   "dataRenovacao",
   "dataTerminoVendido",
   "gerenteProjeto",
@@ -51,6 +50,8 @@ export default async function RenovacoesPage({
   const aRenovar = filtrarPorMes("dataTerminoVendido", mes, interno, status);
   const renovados = filtrarPorMes("dataRenovacao", mes, interno, status);
   const ind = calcularIndicadores(aRenovar, renovados);
+  const parcelaARenovar = somarParcelaFechada(aRenovar);
+  const parcelaRenovada = somarParcelaFechada(renovados);
   const base = getBaseContratos();
 
   return (
@@ -69,11 +70,11 @@ export default async function RenovacoesPage({
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2.5 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
         <IndicadorTaxa
           titulo="Renovação (projetos)"
           taxa={ind.taxaQuantidade}
-          detalhe={`${ind.renovados} de ${ind.potencial} que chegaram ao momento de renovar`}
+          detalhe={`${ind.renovados} de ${ind.potencial} no momento de renovar`}
           nota={`${ind.aRenovar} ainda a renovar`}
         />
         <IndicadorTaxa
@@ -81,6 +82,11 @@ export default async function RenovacoesPage({
           taxa={ind.taxaReceita}
           detalhe={`${formatarMoeda(ind.receitaRenovada)} de ${formatarMoeda(ind.receitaPotencial)}`}
           nota={`${formatarMoeda(ind.receitaARenovar)} em risco`}
+        />
+        <StatCard
+          label="Parcela fechada"
+          value={formatarMoeda(parcelaARenovar + parcelaRenovada)}
+          hint={`${formatarMoeda(parcelaARenovar)} a renovar · ${formatarMoeda(parcelaRenovada)} renovado`}
         />
         <StatCard label="A renovar no mês" value={ind.aRenovar} hint="Término vendido no mês" />
         <StatCard label="Renovados no mês" value={ind.renovados} hint="Renovação registrada no mês" />

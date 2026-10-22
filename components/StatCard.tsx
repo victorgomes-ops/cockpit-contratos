@@ -8,12 +8,12 @@ export function StatCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded-lg border border-pwr-dark-blue/10 bg-white px-3.5 py-3">
-      <p className="text-[11px] font-medium tracking-wide text-pwr-blue/55 uppercase">
+    <div className="rounded-md border border-pwr-dark-blue/10 bg-white px-2.5 py-2">
+      <p className="truncate text-[10px] font-medium tracking-wide text-pwr-blue/50 uppercase">
         {label}
       </p>
-      <p className="mt-1 text-xl font-semibold text-pwr-dark-blue">{value}</p>
-      {hint && <p className="mt-0.5 text-[11px] leading-snug text-pwr-blue/45">{hint}</p>}
+      <p className="mt-0.5 text-base leading-tight font-semibold text-pwr-dark-blue">{value}</p>
+      {hint && <p className="mt-0.5 text-[10px] leading-snug text-pwr-blue/40">{hint}</p>}
     </div>
   );
 }

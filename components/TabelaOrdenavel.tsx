@@ -22,7 +22,6 @@ type Definicao = {
   valor: (c: ContratoBase) => string;
   // Colunas de texto livre truncam para caber; o valor completo fica no title.
   largura?: string;
-  alinharDireita?: boolean;
 };
 
 const DEFINICOES: Record<ChaveColuna, Definicao> = {
@@ -32,7 +31,6 @@ const DEFINICOES: Record<ChaveColuna, Definicao> = {
     titulo: "Parc.",
     tipo: "numero",
     valor: (c) => c.parcelasVendidas.replace(/\.0$/, ""),
-    alinharDireita: true,
   },
   dataTerminoVendido: {
     titulo: "Término",
@@ -58,7 +56,6 @@ const DEFINICOES: Record<ChaveColuna, Definicao> = {
     titulo: "Rec. Anual",
     tipo: "dinheiro",
     valor: (c) => c.receitaRecorrente,
-    alinharDireita: true,
   },
 };
 
@@ -126,8 +123,8 @@ export function TabelaOrdenavel({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-pwr-dark-blue/10 bg-white">
-      <table className="min-w-full text-[12px]">
+    <div className="overflow-x-auto rounded-md border border-pwr-dark-blue/10 bg-white">
+      <table className="min-w-full text-center text-[11.5px]">
         <thead className="border-b border-pwr-dark-blue/10 bg-pwr-dark-blue/[0.03]">
           <tr>
             {colunas.map((coluna) => {
@@ -138,9 +135,9 @@ export function TabelaOrdenavel({
                   <button
                     type="button"
                     onClick={() => alternar(coluna)}
-                    className={`flex w-full items-center gap-1 px-2 py-1.5 text-[10px] font-semibold tracking-wide uppercase hover:text-pwr-orange ${
-                      def.alinharDireita ? "justify-end" : "text-left"
-                    } ${ativa ? "text-pwr-orange" : "text-pwr-blue/55"}`}
+                    className={`flex w-full items-center justify-center gap-0.5 px-1.5 py-1 text-[9.5px] font-semibold tracking-wide uppercase hover:text-pwr-orange ${
+                      ativa ? "text-pwr-orange" : "text-pwr-blue/55"
+                    }`}
                   >
                     {def.titulo}
                     <span className={ativa ? "" : "text-pwr-blue/20"}>
@@ -162,8 +159,8 @@ export function TabelaOrdenavel({
                   <td
                     key={coluna}
                     title={texto}
-                    className={`truncate px-2 py-1.5 text-pwr-blue/75 ${def.largura ?? "whitespace-nowrap"} ${
-                      def.alinharDireita ? "text-right tabular-nums" : ""
+                    className={`truncate px-1.5 py-[3px] text-pwr-blue/75 ${
+                      def.largura ?? "whitespace-nowrap"
                     }`}
                   >
                     {texto}

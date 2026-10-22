@@ -23,14 +23,14 @@ export function TabelaContratos({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-pwr-dark-blue/10 bg-white">
-      <table className="min-w-full text-[12px]">
+    <div className="overflow-x-auto rounded-md border border-pwr-dark-blue/10 bg-white">
+      <table className="min-w-full text-center text-[11.5px]">
         <thead className="border-b border-pwr-dark-blue/10 bg-pwr-dark-blue/[0.03]">
           <tr>
             {colunas.map((coluna) => (
               <th
                 key={coluna.titulo}
-                className="px-2.5 py-1.5 text-left text-[10px] font-semibold tracking-wide text-pwr-blue/55 uppercase whitespace-nowrap"
+                className="px-1.5 py-1 text-[9.5px] font-semibold tracking-wide text-pwr-blue/55 uppercase whitespace-nowrap"
               >
                 {coluna.titulo}
               </th>
@@ -41,7 +41,7 @@ export function TabelaContratos({
           {contratos.map((contrato, i) => (
             <tr key={`${contrato.nome}-${i}`} className="hover:bg-pwr-orange/[0.04]">
               {colunas.map((coluna) => (
-                <td key={coluna.titulo} className="px-2.5 py-1.5 whitespace-nowrap text-pwr-blue/75">
+                <td key={coluna.titulo} className="px-1.5 py-[3px] whitespace-nowrap text-pwr-blue/75">
                   {coluna.valor(contrato) || "—"}
                 </td>
               ))}

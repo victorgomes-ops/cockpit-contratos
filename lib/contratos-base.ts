@@ -17,6 +17,7 @@ export type ContratoBase = {
   tipoDuracao: string;
   aceiteCliente: string;
   valorTotal: string;
+  parcelaFechada: string;
   receitaRecorrente: string;
   motivoNaoRenovacao: string;
   servicos: string;
@@ -151,6 +152,11 @@ export function valorDaParcela(contrato: ContratoBase): number {
 
 export function valorRenovado(contrato: ContratoBase): number {
   return valorDaParcela(contrato) * parcelasRenovadas(contrato);
+}
+
+// Parcela Fechada = valor da parcela acordada de cada projeto.
+export function somarParcelaFechada(contratos: ContratoBase[]): number {
+  return contratos.reduce((total, c) => total + valorNumerico(c.parcelaFechada), 0);
 }
 
 export type ResumoMes = {

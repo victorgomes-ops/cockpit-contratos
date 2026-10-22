@@ -101,6 +101,7 @@ try {
       tipoDuracao         = Campo 'Tipo Duração'
       aceiteCliente       = Campo 'Aceite do Cliente'
       valorTotal          = Campo 'Valor Total'
+      parcelaFechada      = Campo 'Parcela Fechada'
       receitaRecorrente   = Campo 'Receita Recorrente Anual'
       motivoNaoRenovacao  = Campo 'Motivo Não Renovação'
       servicos            = Campo 'Serviços'
