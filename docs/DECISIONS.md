@@ -97,6 +97,33 @@ Viva e Titan - ACG", entrada em 2021, duração 60 meses, Valor Total $450.000. 
 Anual dá 62,3%, coerente. A base **não guarda o valor incremental de uma renovação** —
 se um dia isso for necessário, precisa de campo novo na planilha.
 
+### Parcelas renovadas no mês — campo derivado (22/10/2026)
+
+`Parcelas Vendidas` e `Duração Vendida` são **acumulados** e crescem a cada renovação,
+igual ao `Valor Total`. Somar `Parcelas Vendidas` dos contratos renovados num mês dá as
+parcelas da vida inteira deles, não as parcelas que a renovação acrescentou. Em
+out/2026: 434 somando o acumulado contra **142** efetivamente renovadas.
+
+A aba **Recorrência Mensal** deriva o valor correto assim:
+- `parcelas renovadas = meses de calendário entre Data de Renovação e o novo Data Término Vendido`
+- `valor da parcela = Valor Total ÷ Duração Vendida` (os dois acumulados, a razão é um valor mensal válido)
+- `valor renovado = parcelas renovadas × valor da parcela`
+
+Validado contra 8 contratos reais de out/2026 (ex.: CS Distribuidora, entrada 14/10/2024,
+renovado 14/10/2026, término 17/10/2027 → acumulado 36 parcelas, renovadas 12).
+
+**Visão mensal e anual são coisas diferentes e ficam separadas na tela**: o valor
+renovado no mês (fluxo do período) não se confunde com a Receita Recorrente Anual
+(anualizada) dos contratos renovados.
+
+### Layout (22/10/2026)
+
+Navegação por **menu lateral fixo** (`components/Sidebar.tsx`), que colapsa para só
+ícones abaixo de `lg`. Os componentes antigos `NavBar`, `Footer` e `Logo` foram
+removidos — o rodapé virou o bloco inferior da sidebar. Densidade padrão: tabelas em
+`text-[12px]` com `px-2 py-1.5`, cabeçalhos em `text-[10px]`, KPIs em cards de
+`px-3.5 py-3` com valor em `text-xl`.
+
 **Pipeline de dados**: `npm run sync` (script PowerShell em `scripts/sync-contratos.ps1`)
 lê a planilha das Bases SPWR e grava `data/contratos.json` com 16 campos selecionados.
 O JSON é commitado e vai junto no deploy. Nada é escrito no Supabase. Escolhido esse
