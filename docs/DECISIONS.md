@@ -116,13 +116,27 @@ renovado 14/10/2026, término 17/10/2027 → acumulado 36 parcelas, renovadas 12
 renovado no mês (fluxo do período) não se confunde com a Receita Recorrente Anual
 (anualizada) dos contratos renovados.
 
+### Parcela Fechada (22/10/2026)
+
+`Parcela Fechada` é o valor da parcela acordada de cada projeto — ao contrário de
+`Valor Total` e `Parcelas Vendidas`, **não é acumulado**, é o valor unitário da parcela.
+Preenchido em 100% da base (213 contratos com valor zero, legítimos). Mesmos dois
+formatos de moeda, já tratados por `valorNumerico()`. Usado no KPI "Parcela fechada" da
+aba Renovações: out/2026 → R$ 154.007 a renovar + R$ 148.124 renovado = R$ 302.131.
+
 ### Layout (22/10/2026)
 
-Navegação por **menu lateral fixo** (`components/Sidebar.tsx`), que colapsa para só
-ícones abaixo de `lg`. Os componentes antigos `NavBar`, `Footer` e `Logo` foram
-removidos — o rodapé virou o bloco inferior da sidebar. Densidade padrão: tabelas em
-`text-[12px]` com `px-2 py-1.5`, cabeçalhos em `text-[10px]`, KPIs em cards de
-`px-3.5 py-3` com valor em `text-xl`.
+Navegação por **menu lateral fixo** (`components/Sidebar.tsx`) com botão hamburguer que
+recolhe para só ícones (52px). O estado fica em `useState` dentro do componente, que
+vive no layout — por isso sobrevive à navegação entre páginas, mas reseta no reload
+(não há persistência, e isso é intencional para evitar flash de hidratação).
+
+Os componentes antigos `NavBar`, `Footer` e `Logo` foram removidos — o rodapé virou o
+bloco inferior da sidebar.
+
+Densidade padrão das tabelas: `text-[11.5px]`, células `px-1.5 py-[3px]`, cabeçalhos
+`text-[9.5px]`, **dados centralizados**. KPIs em cards de `px-2.5 py-2` com valor em
+`text-base`.
 
 **Pipeline de dados**: `npm run sync` (script PowerShell em `scripts/sync-contratos.ps1`)
 lê a planilha das Bases SPWR e grava `data/contratos.json` com 16 campos selecionados.
