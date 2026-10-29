@@ -225,7 +225,9 @@ export function filtrarPorPeriodo(
     });
 }
 
-export type Fatia = { rotulo: string; quantidade: number };
+// agregada marca a fatia "Outros", que junta varias categorias e por isso nao
+// pode virar filtro.
+export type Fatia = { rotulo: string; quantidade: number; agregada?: boolean };
 
 export function agruparPor(
   contratos: ContratoBase[],
@@ -247,7 +249,71 @@ export function limitarComOutros(fatias: Fatia[], limite: number): Fatia[] {
   if (fatias.length <= limite) return fatias;
   const principais = fatias.slice(0, limite);
   const resto = fatias.slice(limite).reduce((t, f) => t + f.quantidade, 0);
-  return resto > 0 ? [...principais, { rotulo: `Outros (${fatias.length - limite})`, quantidade: resto }] : principais;
+  return resto > 0
+    ? [
+        ...principais,
+        { rotulo: `Outros (${fatias.length - limite})`, quantidade: resto, agregada: true },
+      ]
+    : principais;
+}
+
+// O rotulo que agruparPor da a quem nao tem o campo preenchido. Os filtros
+// clicaveis precisam reproduzir essa mesma regra para casar com a fatia.
+export const SEM_INFORMACAO = "Sem informação";
+
+export function rotuloDe(valor: string): string {
+  return valor.trim() || SEM_INFORMACAO;
+}
+
+// Periodo imediatamente anterior ao selecionado, para a comparacao dos KPIs.
+// "todos" compara ano contra ano; um mes compara contra o mes anterior.
+export function periodoAnterior(
+  ano: string,
+  mes: string
+): { ano: string; mes: string; rotulo: string } {
+  if (mes === "todos") {
+    const anterior = String(Number(ano) - 1);
+    return { ano: anterior, mes: "todos", rotulo: anterior };
+  }
+  const n = Number(mes);
+  if (n === 1) {
+    const anterior = String(Number(ano) - 1);
+    return { ano: anterior, mes: "12", rotulo: `dez/${anterior}` };
+  }
+  // Mesmo ano, entao o nome do mes basta e o card nao precisa truncar.
+  return {
+    ano,
+    mes: String(n - 1).padStart(2, "0"),
+    rotulo: MESES[n - 2].toLowerCase(),
+  };
+}
+
+// Tempo de vida do contrato: da entrada ate o termino real. Contratos sem uma
+// das duas datas validas ficam de fora, por isso devolvemos quantos entraram.
+export function duracaoMediaMeses(contratos: ContratoBase[]): {
+  media: number;
+  considerados: number;
+} {
+  const duracoes = contratos
+    .filter((c) => anoDe(c.dataEntrada) !== null && anoDe(c.dataTerminoReal) !== null)
+    .map((c) => mesesEntre(c.dataEntrada, c.dataTerminoReal));
+  if (duracoes.length === 0) return { media: 0, considerados: 0 };
+  return {
+    media: duracoes.reduce((t, n) => t + n, 0) / duracoes.length,
+    considerados: duracoes.length,
+  };
+}
+
+// Doze posicoes, janeiro a dezembro. Espera uma lista ja restrita a um ano.
+export function contagemPorMes(contratos: ContratoBase[], campo: CampoData): number[] {
+  const meses = new Array<number>(12).fill(0);
+  for (const c of contratos) {
+    const m = mesAnoDe(c[campo]);
+    if (!m) continue;
+    const i = Number(m.slice(5, 7)) - 1;
+    if (i >= 0 && i < 12) meses[i] += 1;
+  }
+  return meses;
 }
 
 // Parcela Fechada = valor da parcela acordada de cada projeto.
