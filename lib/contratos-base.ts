@@ -14,12 +14,14 @@ export type ContratoBase = {
   dataEntrada: string;
   dataRenovacao: string;
   dataTerminoVendido: string;
+  dataTerminoReal: string;
   tipoDuracao: string;
   aceiteCliente: string;
   valorTotal: string;
   parcelaFechada: string;
   receitaRecorrente: string;
   motivoNaoRenovacao: string;
+  motivoDetalhe: string;
   servicos: string;
 };
 
@@ -30,7 +32,11 @@ export type BaseContratos = {
   contratos: ContratoBase[];
 };
 
-export type CampoData = "dataEntrada" | "dataRenovacao" | "dataTerminoVendido";
+export type CampoData =
+  | "dataEntrada"
+  | "dataRenovacao"
+  | "dataTerminoVendido"
+  | "dataTerminoReal";
 export type FiltroInterno = "todos" | "sim" | "nao";
 
 const base = dadosBrutos as BaseContratos;
@@ -152,6 +158,96 @@ export function valorDaParcela(contrato: ContratoBase): number {
 
 export function valorRenovado(contrato: ContratoBase): number {
   return valorDaParcela(contrato) * parcelasRenovadas(contrato);
+}
+
+// A planilha exporta campos de data vazios como 31/12/1899 (dia zero do Excel),
+// e em alguns casos como ano 0001. Essas datas significam "nao preenchido".
+const ANO_MINIMO = 2000;
+
+export function anoDe(data: string): string | null {
+  const m = /^\d{2}\/\d{2}\/(\d{4})$/.exec(data ?? "");
+  if (!m) return null;
+  return Number(m[1]) >= ANO_MINIMO ? m[1] : null;
+}
+
+export function contarSemDataValida(campo: CampoData): number {
+  return base.contratos.filter((c) => {
+    const bruto = c[campo] ?? "";
+    return bruto !== "" && anoDe(bruto) === null;
+  }).length;
+}
+
+// Anos com encerramento registrado, do mais recente para o mais antigo.
+export function anosDisponiveis(campo: CampoData): string[] {
+  const anos = new Set<string>();
+  for (const c of base.contratos) {
+    const ano = anoDe(c[campo]);
+    if (ano) anos.add(ano);
+  }
+  return Array.from(anos).sort((a, b) => Number(b) - Number(a));
+}
+
+export const MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+// mes = "todos" traz o ano inteiro.
+export function filtrarPorPeriodo(
+  campo: CampoData,
+  ano: string,
+  mes: string,
+  interno: FiltroInterno
+): ContratoBase[] {
+  return base.contratos
+    .filter((c) => {
+      // anoDe() ja descarta as datas-sentinela do Excel.
+      if (anoDe(c[campo]) !== ano) return false;
+      if (mes === "todos") return true;
+      return mesAnoDe(c[campo]) === `${ano}-${mes}`;
+    })
+    .filter((c) => (interno === "todos" ? true : interno === "sim" ? c.interno : !c.interno))
+    .sort((a, b) => {
+      const da = mesAnoDe(a[campo]) ?? "";
+      const db = mesAnoDe(b[campo]) ?? "";
+      if (da !== db) return da.localeCompare(db);
+      return diaDe(a[campo]) - diaDe(b[campo]);
+    });
+}
+
+export type Fatia = { rotulo: string; quantidade: number };
+
+export function agruparPor(
+  contratos: ContratoBase[],
+  chave: (c: ContratoBase) => string
+): Fatia[] {
+  const mapa = new Map<string, number>();
+  for (const c of contratos) {
+    const k = chave(c).trim() || "Sem informação";
+    mapa.set(k, (mapa.get(k) ?? 0) + 1);
+  }
+  return Array.from(mapa, ([rotulo, quantidade]) => ({ rotulo, quantidade })).sort(
+    (a, b) => b.quantidade - a.quantidade
+  );
+}
+
+// Mantem os maiores e agrupa a cauda em "Outros", para a barra nao virar
+// uma parede de 15 linhas no filtro de ano inteiro.
+export function limitarComOutros(fatias: Fatia[], limite: number): Fatia[] {
+  if (fatias.length <= limite) return fatias;
+  const principais = fatias.slice(0, limite);
+  const resto = fatias.slice(limite).reduce((t, f) => t + f.quantidade, 0);
+  return resto > 0 ? [...principais, { rotulo: `Outros (${fatias.length - limite})`, quantidade: resto }] : principais;
 }
 
 // Parcela Fechada = valor da parcela acordada de cada projeto.

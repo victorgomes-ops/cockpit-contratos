@@ -10,6 +10,9 @@ export type ChaveColuna =
   | "parcelaFechada"
   | "dataTerminoVendido"
   | "dataRenovacao"
+  | "dataTerminoReal"
+  | "motivoNaoRenovacao"
+  | "motivoDetalhe"
   | "status"
   | "gerenteProjeto"
   | "scrumMaster"
@@ -38,6 +41,24 @@ const DEFINICOES: Record<ChaveColuna, Definicao> = {
     tipo: "data",
     valor: (c) => c.dataRenovacao,
     largura: "w-[11%]",
+  },
+  dataTerminoReal: {
+    titulo: "Término Real",
+    tipo: "data",
+    valor: (c) => c.dataTerminoReal,
+    largura: "w-[11%]",
+  },
+  motivoNaoRenovacao: {
+    titulo: "Motivo",
+    tipo: "texto",
+    valor: (c) => c.motivoNaoRenovacao,
+    largura: "w-[14%]",
+  },
+  motivoDetalhe: {
+    titulo: "Detalhe do motivo",
+    tipo: "texto",
+    valor: (c) => c.motivoDetalhe,
+    largura: "w-[24%]",
   },
   status: {
     titulo: "Status",

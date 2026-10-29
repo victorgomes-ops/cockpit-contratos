@@ -15,7 +15,7 @@ const secoes = [
   { href: "/", label: "Visão Geral", Icone: IconeVisaoGeral },
   { href: "/renovacoes", label: "Renovações", Icone: IconeRenovacoes },
   { href: "/recorrencia", label: "Recorrência Mensal", Icone: IconeRecorrencia },
-  { href: "/projetos", label: "Controle de Projetos", Icone: IconeProjetos },
+  { href: "/encerramentos", label: "Encerramentos", Icone: IconeProjetos },
   { href: "/contratos", label: "Contratos", Icone: IconeContratos },
 ];
 

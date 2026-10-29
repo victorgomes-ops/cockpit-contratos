@@ -98,12 +98,14 @@ try {
       dataEntrada         = Campo 'Data Entrada'
       dataRenovacao       = Campo 'Data de Renovação'
       dataTerminoVendido  = Campo 'Data Término Vendido'
+      dataTerminoReal     = Campo 'Data Término Real'
       tipoDuracao         = Campo 'Tipo Duração'
       aceiteCliente       = Campo 'Aceite do Cliente'
       valorTotal          = Campo 'Valor Total'
       parcelaFechada      = Campo 'Parcela Fechada'
       receitaRecorrente   = Campo 'Receita Recorrente Anual'
       motivoNaoRenovacao  = Campo 'Motivo Não Renovação'
+      motivoDetalhe       = Campo 'Motivo de não Renovação'
       servicos            = Campo 'Serviços'
     })
   }
