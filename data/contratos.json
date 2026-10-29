@@ -1,7 +1,7 @@
 {
-    "gerado":  "2026-10-23T17:53:15",
+    "gerado":  "2026-10-29T15:16:48",
     "origem":  "Contratos.xlsx",
-    "total":  1784,
+    "total":  1785,
     "contratos":  [
                       {
                           "nome":  "2Fun! Eventos",
@@ -3064,12 +3064,12 @@
                       {
                           "nome":  "Automidia - PE",
                           "cliente":  "Automidia",
-                          "status":  "Pendente",
+                          "status":  "Ativo",
                           "interno":  false,
                           "unidade":  "Fortaleza",
-                          "gerenteProjeto":  "",
-                          "gerenteVenda":  "",
-                          "scrumMaster":  "",
+                          "gerenteProjeto":  "Wilson Sá",
+                          "gerenteVenda":  "Wilson Sá",
+                          "scrumMaster":  "Vinicius Correia",
                           "parcelasVendidas":  "12.0",
                           "duracaoVendida":  "12.0",
                           "dataEntrada":  "22/10/2026",
@@ -5110,7 +5110,7 @@
                       {
                           "nome":  "Capital Upgrade - Espião",
                           "cliente":  "CAUP",
-                          "status":  "Ativo",
+                          "status":  "Inativo",
                           "interno":  false,
                           "unidade":  "São Paulo",
                           "gerenteProjeto":  "Pedro Fernandes",
@@ -9660,6 +9660,28 @@
                           "receitaRecorrente":  "$78,000.00",
                           "motivoNaoRenovacao":  "Renovado",
                           "servicos":  "Estruturação Financeira"
+                      },
+                      {
+                          "nome":  "CS Rações - Digital",
+                          "cliente":  "CS Rações",
+                          "status":  "Pendente",
+                          "interno":  false,
+                          "unidade":  "Fortaleza",
+                          "gerenteProjeto":  "Miguel Dyna",
+                          "gerenteVenda":  "Miguel Dyna",
+                          "scrumMaster":  "Miguel Dyna",
+                          "parcelasVendidas":  "16.0",
+                          "duracaoVendida":  "16.0",
+                          "dataEntrada":  "05/11/2026",
+                          "dataRenovacao":  "",
+                          "dataTerminoVendido":  "07/03/2028",
+                          "tipoDuracao":  "Longa Duração",
+                          "aceiteCliente":  "Sim",
+                          "valorTotal":  "$107,100.00",
+                          "parcelaFechada":  "$6,300.00",
+                          "receitaRecorrente":  "$75,600.00",
+                          "motivoNaoRenovacao":  "",
+                          "servicos":  "Diagnóstico Financeiro, Diagnóstico de Tecnologia, Implantação da Transformação Digital"
                       },
                       {
                           "nome":  "CS Rações - Marcas",
@@ -17166,7 +17188,7 @@
                       {
                           "nome":  "Grupo Cafe",
                           "cliente":  "Grupo Cafe",
-                          "status":  "Pendente",
+                          "status":  "Ativo",
                           "interno":  false,
                           "unidade":  "Fortaleza",
                           "gerenteProjeto":  "",
@@ -17178,7 +17200,7 @@
                           "dataRenovacao":  "",
                           "dataTerminoVendido":  "15/01/2028",
                           "tipoDuracao":  "Longa Duração",
-                          "aceiteCliente":  "Não",
+                          "aceiteCliente":  "Sim",
                           "valorTotal":  "$130,000.00",
                           "parcelaFechada":  "$10,000.00",
                           "receitaRecorrente":  "$120,000.00",
@@ -19498,7 +19520,7 @@
                       {
                           "nome":  "Illa Mare",
                           "cliente":  "Grupo Illa Mare",
-                          "status":  "Ativo",
+                          "status":  "Inativo",
                           "interno":  false,
                           "unidade":  "Fortaleza",
                           "gerenteProjeto":  "Eduardo Bayma",
@@ -19514,7 +19536,7 @@
                           "valorTotal":  "$626,000.00",
                           "parcelaFechada":  "$14,000.00",
                           "receitaRecorrente":  "$168,000.00",
-                          "motivoNaoRenovacao":  "",
+                          "motivoNaoRenovacao":  "Insatisfação",
                           "servicos":  "Gestão de Controladoria"
                       },
                       {
@@ -21358,7 +21380,7 @@
                           "dataRenovacao":  "",
                           "dataTerminoVendido":  "29/04/2027",
                           "tipoDuracao":  "Longa Duração",
-                          "aceiteCliente":  "Não",
+                          "aceiteCliente":  "Sim",
                           "valorTotal":  "$46,900.00",
                           "parcelaFechada":  "$6,700.00",
                           "receitaRecorrente":  "$40,200.00",
