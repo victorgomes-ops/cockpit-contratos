@@ -60,6 +60,7 @@ definição de "projeto aceito" e "renovação").
 
 - **GitHub**: victorgomes-ops/cockpit-contratos
 - **Deploy**: Vercel — projeto `cockpit-contratos` (team `victorgomes-8807s-projects`)
+- **Endereço em produção**: https://cockpit-contratos.vercel.app (protegido por senha)
 - **Banco**: Supabase `alocacao-pwr-br` (somente leitura)
 
 ## Identidade visual
