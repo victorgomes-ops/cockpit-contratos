@@ -1,22 +1,48 @@
 import { BotaoCopiar } from "@/components/BotaoCopiar";
 import { FiltrosMotivos } from "@/components/FiltrosMotivos";
-import { Slide, TabelaSlide } from "@/components/Slide";
+import type { LinhaPainel } from "@/components/PainelBarras";
+import { type CartaoKpi, SlideMotivos } from "@/components/SlideMotivos";
 import { type ParametrosMotivos, analisarMotivos } from "@/lib/analise-motivos";
-import { ROTULO_BASE_VALOR, formatarMoeda, getBaseContratos } from "@/lib/contratos-base";
 import {
-  type ColunaExport,
-  type LinhaExport,
-  limitarLinhas,
-  tabelaHtml,
-  tabelaTexto,
-} from "@/lib/exportar";
+  type FatiaValor,
+  MESES,
+  ROTULO_BASE_VALOR,
+  agruparComValor,
+  filtrarPorIntervalo,
+  formatarMoedaExata,
+  formatarNumeroExato,
+  getBaseContratos,
+  somarValorEncerrado,
+} from "@/lib/contratos-base";
+import { type ColunaExport, tabelaHtml, tabelaTexto } from "@/lib/exportar";
+import { gerarLeitura } from "@/lib/leitura-executiva";
 
-// Um slide projetado nao comporta mais que isto sem virar letra miuda.
-const MAX_LINHAS = 8;
-const MAX_LINHAS_CRUZAMENTO = 9;
+const MAX_MOTIVOS = 8;
+const MAX_GERENTES = 10;
 
-function pctStr(parte: number, total: number): string {
-  return total > 0 ? `${((parte / total) * 100).toFixed(1).replace(".", ",")}%` : "—";
+// Ordena por receita, nao por contagem: num slide de resultado o que manda e
+// o dinheiro. Dois contratos de Perfil pesam mais que tres de Renovado.
+function porReceita(fatias: FatiaValor[]): FatiaValor[] {
+  return [...fatias].sort((a, b) => b.receita - a.receita || b.contratos - a.contratos);
+}
+
+// Mantem o total fechando quando a cauda nao cabe no painel.
+function limitar(fatias: FatiaValor[], maximo: number): LinhaPainel[] {
+  const linhas = fatias.map((f) => ({
+    rotulo: f.rotulo,
+    contratos: f.contratos,
+    receita: f.receita,
+  }));
+  if (linhas.length <= maximo) return linhas;
+  const resto = linhas.slice(maximo);
+  return [
+    ...linhas.slice(0, maximo),
+    {
+      rotulo: `Outros (${resto.length})`,
+      contratos: resto.reduce((t, l) => t + l.contratos, 0),
+      receita: resto.reduce((t, l) => t + l.receita, 0),
+    },
+  ];
 }
 
 export default async function ApresentacaoPage({
@@ -26,127 +52,150 @@ export default async function ApresentacaoPage({
 }) {
   const a = analisarMotivos(await searchParams);
   const base = getBaseContratos();
-  const geradoEm = new Date(base.gerado).toLocaleDateString("pt-BR");
-  const rodape = `Encerramentos · ${a.mesRotulo} · receita por ${ROTULO_BASE_VALOR[a.baseValor].toLowerCase()} · base de ${geradoEm}`;
 
-  const colunasMotivo: ColunaExport[] = [
-    { titulo: "Motivo", alinhamento: "left" },
-    { titulo: "Contratos" },
-    { titulo: "% contr." },
-    { titulo: "Receita encerrada" },
-    { titulo: "% receita" },
-  ];
-  const largurasMotivo = ["40%", "15%", "13%", "20%", "12%"];
+  const motivosMes = porReceita(a.motivosMes);
+  const motivosAcumulado = porReceita(a.motivosAcumulado);
+  const gerentesMes = porReceita(a.gerentesMes);
 
-  const colunasCruz: ColunaExport[] = [
-    { titulo: "Motivo", alinhamento: "left" },
-    { titulo: "Gerente", alinhamento: "left" },
-    { titulo: "Contratos" },
-    { titulo: "% contr." },
-    { titulo: "Receita encerrada" },
-    { titulo: "% receita" },
-  ];
-  const largurasCruz = ["26%", "22%", "12%", "12%", "18%", "10%"];
+  const nomeMes = MESES[a.mes - 1];
+  const nomeMesAcumulado = MESES[a.ate - 1];
 
-  const emLinhas = (
-    linhas: LinhaExport[],
-    totalContratos: number,
-    totalReceita: number
-  ): string[][] =>
-    linhas.map((l) => [
-      ...l.rotulos,
-      String(l.contratos),
-      pctStr(l.contratos, totalContratos),
-      formatarMoeda(l.receita),
-      pctStr(l.receita, totalReceita),
-    ]);
+  // KPI 1: a composicao por status diz se o mes foi baixa definitiva ou pausa.
+  const porStatus = new Map<string, number>();
+  for (const c of a.doMes) porStatus.set(c.status, (porStatus.get(c.status) ?? 0) + 1);
+  const notaStatus =
+    [...porStatus.entries()]
+      .sort((x, y) => y[1] - x[1])
+      .map(([s, n]) => `${n} ${s}`)
+      .join(" · ") || "sem status registrado";
 
-  const linhasMes = emLinhas(
-    limitarLinhas(
-      a.motivosMes.map((m) => ({ rotulos: [m.rotulo], contratos: m.contratos, receita: m.receita })),
-      MAX_LINHAS
-    ),
-    a.doMes.length,
-    a.receitaMes
-  );
-  const totalMes = ["Total", String(a.doMes.length), "100,0%", formatarMoeda(a.receitaMes), "100,0%"];
+  // KPI 2: o mes comparado ao anterior, em multiplo quando sobe e em queda
+  // percentual quando desce — "0,5x" nao se le tao rapido quanto "-52%".
+  const mesAnterior = a.mes > 1 ? a.mes - 1 : null;
+  const doMesAnterior = mesAnterior
+    ? filtrarPorIntervalo("dataTerminoReal", a.ano, mesAnterior, mesAnterior, a.interno)
+    : [];
+  const receitaAnterior = somarValorEncerrado(doMesAnterior, a.baseValor);
+  let notaReceita: string | undefined;
+  if (mesAnterior && receitaAnterior > 0) {
+    const razao = a.receitaMes / receitaAnterior;
+    const nomeAnterior = MESES[mesAnterior - 1];
+    const valor = formatarMoedaExata(receitaAnterior);
+    notaReceita =
+      razao >= 1.1
+        ? `${razao.toFixed(1).replace(".", ",")}x ${nomeAnterior} (${valor})`
+        : razao <= 0.9
+          ? `−${Math.round((1 - razao) * 100)}% vs ${nomeAnterior} (${valor})`
+          : `em linha com ${nomeAnterior} (${valor})`;
+  }
 
-  const linhasAcumulado = emLinhas(
-    limitarLinhas(
-      a.motivosAcumulado.map((m) => ({
-        rotulos: [m.rotulo],
-        contratos: m.contratos,
-        receita: m.receita,
-      })),
-      MAX_LINHAS
-    ),
-    a.doAcumulado.length,
-    a.receitaAcumulada
-  );
-  const totalAcumulado = [
-    "Total",
-    String(a.doAcumulado.length),
-    "100,0%",
-    formatarMoeda(a.receitaAcumulada),
-    "100,0%",
-  ];
+  // KPI 3: marco de milhao, quando houver. Fato, nao meta.
+  const milhoes = Math.floor(a.receitaAcumulada / 1_000_000);
+  const notaAcumulado = [
+    `${a.doAcumulado.length} contratos`,
+    milhoes >= 1 ? `ultrapassou R$ ${milhoes} milhã${milhoes > 1 ? "os" : "o"}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-  const linhasCruz = emLinhas(
-    limitarLinhas(
-      a.linhasCruzamento.map((l) => ({
-        // No slide o motivo vai repetido: sem a linha anterior a vista, a
-        // celula vazia da tabela da tela viraria uma coluna sem sentido.
-        rotulos: [l.motivo, l.gerente],
-        contratos: l.contratos,
-        receita: l.receita,
-      })),
-      MAX_LINHAS_CRUZAMENTO
-    ),
-    a.doMes.length,
-    a.receitaMes
-  );
-  const totalCruz = [
-    "Total",
-    "",
-    String(a.doMes.length),
-    "100,0%",
-    formatarMoeda(a.receitaMes),
-    "100,0%",
-  ];
-
-  const kpis = [
-    { rotulo: "Contratos encerrados", valor: String(a.doMes.length) },
-    { rotulo: "Receita encerrada no mês", valor: formatarMoeda(a.receitaMes) },
-    { rotulo: `Receita acumulada (${a.acumuladoRotulo})`, valor: formatarMoeda(a.receitaAcumulada) },
+  // Mesma regra da leitura: o cartao de destaque mostra o maior motivo
+  // registrado, nao o campo em branco (que aparece no painel 01 e no texto).
+  const lider = motivosMes.find((m) => m.rotulo !== "Sem informação") ?? motivosMes[0];
+  const kpis: CartaoKpi[] = [
     {
-      rotulo: "Principal motivo",
-      valor: a.principal
-        ? `${a.principal.rotulo} — ${a.principal.contratos} (${pctStr(a.principal.contratos, a.doMes.length)})`
-        : "—",
+      rotulo: "Contratos encerrados",
+      valor: String(a.doMes.length),
+      nota: notaStatus,
+      estilo: "claro",
+    },
+    {
+      rotulo: "Receita encerrada no mês",
+      valor: formatarMoedaExata(a.receitaMes),
+      nota: notaReceita,
+      estilo: "laranja",
+    },
+    {
+      rotulo: `Acumulado jan–${nomeMesAcumulado.slice(0, 3).toLowerCase()} ${a.ano}`,
+      valor: formatarMoedaExata(a.receitaAcumulada),
+      nota: notaAcumulado,
+      estilo: "escuro",
+    },
+    {
+      rotulo: lider ? lider.rotulo : "Principal motivo",
+      valor: lider ? String(lider.contratos) : "—",
+      nota: lider
+        ? `${formatarMoedaExata(lider.receita)} · ${((lider.receita / a.receitaMes) * 100).toFixed(0)}% da receita do mês`
+        : undefined,
+      estilo: "claro",
     },
   ];
 
-  const textoResumo = a.resumo.map((p) => `${p.titulo}\n${p.texto}`).join("\n\n");
-  const htmlResumo =
-    `<p style="font-family:Arial,sans-serif;font-size:12pt;font-weight:700;color:#05244F;margin:0 0 8px;">Resumo Executivo — ${a.mesRotulo}</p>` +
-    a.resumo
-      .map(
-        (p) =>
-          `<p style="font-family:Arial,sans-serif;font-size:11pt;color:#05244F;margin:0 0 8px;"><b>${p.titulo}:</b> ${p.texto}</p>`
-      )
-      .join("");
+  const linhasMes = limitar(motivosMes, MAX_MOTIVOS);
+  const linhasAcumulado = limitar(motivosAcumulado, MAX_MOTIVOS);
+  const linhasGerentes = limitar(gerentesMes, MAX_GERENTES);
+
+  const leitura = gerarLeitura({
+    ano: a.ano,
+    mes: a.mes,
+    interno: a.interno,
+    baseValor: a.baseValor,
+    doMes: a.doMes,
+    receitaMes: a.receitaMes,
+    motivosPorReceita: motivosMes,
+  });
+
+  // Exportacao das tres tabelas e do texto, para quem prefere colar como
+  // tabela editavel em vez de imagem.
+  const colunas: ColunaExport[] = [
+    { titulo: "Linha", alinhamento: "left" },
+    { titulo: "Contratos" },
+    { titulo: "Receita encerrada" },
+    { titulo: "% receita" },
+  ];
+  const paraExport = (linhas: LinhaPainel[], total: number) =>
+    linhas.map((l) => [
+      l.rotulo,
+      String(l.contratos),
+      formatarNumeroExato(l.receita),
+      total > 0 ? `${((l.receita / total) * 100).toFixed(1).replace(".", ",")}%` : "—",
+    ]);
+
+  const blocos = [
+    {
+      titulo: `Motivo — ${nomeMes} de ${a.ano}`,
+      linhas: paraExport(linhasMes, a.receitaMes),
+      total: ["Total", String(a.doMes.length), formatarNumeroExato(a.receitaMes), "100,0%"],
+    },
+    {
+      titulo: `Motivo — janeiro a ${nomeMesAcumulado.toLowerCase()} de ${a.ano}`,
+      linhas: paraExport(linhasAcumulado, a.receitaAcumulada),
+      total: [
+        "Total",
+        String(a.doAcumulado.length),
+        formatarNumeroExato(a.receitaAcumulada),
+        "100,0%",
+      ],
+    },
+    {
+      titulo: `Gerente de projeto — ${nomeMes} de ${a.ano}`,
+      linhas: paraExport(linhasGerentes, a.receitaMes),
+      total: ["Total", String(a.doMes.length), formatarNumeroExato(a.receitaMes), "100,0%"],
+    },
+  ];
+
+  const textoLeitura = leitura
+    ? `Leitura executiva — ${leitura.titulo}\n${leitura.frases.join(" ").replace(/\*\*/g, "")}`
+    : "";
 
   return (
     <>
       <div className="nao-imprimir">
         <p className="mt-3 text-xs text-pwr-blue/50">
-          Os mesmos números da aba Motivos, em 16:9. Para levar ao PowerPoint:{" "}
-          <strong className="font-medium text-pwr-blue/70">Ctrl+P → Salvar como PDF</strong> sai
-          um slide por página em paisagem, e <strong className="font-medium text-pwr-blue/70">
-            Win+Shift+S
-          </strong>{" "}
-          recorta um slide como imagem. Os botões <em>Copiar</em> colam no PowerPoint como tabela
-          editável, não como figura.
+          Um slide, 16:9, com os mesmos números da aba Motivos. Para levar ao PowerPoint:{" "}
+          <strong className="font-medium text-pwr-blue/70">Win+Shift+S</strong> recorta o slide e
+          cola como imagem, ou <strong className="font-medium text-pwr-blue/70">Ctrl+P</strong> →
+          Salvar como PDF em paisagem. Os botões abaixo colam as tabelas no PowerPoint como tabela
+          editável.
         </p>
 
         <FiltrosMotivos
@@ -157,182 +206,58 @@ export default async function ApresentacaoPage({
           valor={a.baseValor}
           anosDisponiveis={a.anos}
         />
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {blocos.map((b, i) => (
+            <BotaoCopiar
+              key={b.titulo}
+              rotulo={["Copiar motivos do mês", "Copiar acumulado", "Copiar gerentes"][i]}
+              html={tabelaHtml(colunas, b.linhas, b.total, b.titulo)}
+              texto={tabelaTexto(colunas, b.linhas, b.total, b.titulo)}
+            />
+          ))}
+          {leitura && (
+            <BotaoCopiar rotulo="Copiar leitura executiva" texto={textoLeitura} />
+          )}
+        </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-6">
-        <Slide
-          titulo={`Encerramentos — ${a.mesRotulo}`}
-          subtitulo={`Receita encerrada medida por ${ROTULO_BASE_VALOR[a.baseValor].toLowerCase()}`}
-          rodape={rodape}
-          acao={
-            <BotaoCopiar
-              rotulo="Copiar indicadores"
-              html={tabelaHtml(
-                [{ titulo: "Indicador", alinhamento: "left" }, { titulo: "Valor" }],
-                kpis.map((k) => [k.rotulo, k.valor]),
-                null,
-                `Encerramentos — ${a.mesRotulo}`
-              )}
-              texto={tabelaTexto(
-                [{ titulo: "Indicador" }, { titulo: "Valor" }],
-                kpis.map((k) => [k.rotulo, k.valor]),
-                null,
-                `Encerramentos — ${a.mesRotulo}`
-              )}
-            />
-          }
-        >
-          <div className="flex h-full flex-col" style={{ gap: "1.8cqw" }}>
-            <div className="grid flex-1 grid-cols-2" style={{ gap: "1.8cqw" }}>
-              {kpis.map((k) => (
-                <div
-                  key={k.rotulo}
-                  className="flex flex-col justify-center rounded border-l-[0.35cqw] border-pwr-orange bg-pwr-dark-blue/[0.04]"
-                  style={{ padding: "1.4cqw 2cqw" }}
-                >
-                  <p
-                    className="truncate font-medium tracking-wide text-pwr-blue/55 uppercase"
-                    style={{ fontSize: "1.1cqw" }}
-                  >
-                    {k.rotulo}
-                  </p>
-                  <p
-                    className="truncate leading-tight font-semibold text-pwr-dark-blue"
-                    style={{ fontSize: "2.6cqw", marginTop: "0.4cqw" }}
-                  >
-                    {k.valor}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* A frase de abertura do resumo, para o slide de capa ja dizer o
-                que aconteceu e nao so quanto deu. */}
-            {a.resumo[0] && (
-              <div className="shrink-0 rounded bg-pwr-dark-blue" style={{ padding: "1.5cqw 2cqw" }}>
-                <p className="text-white/85" style={{ fontSize: "1.35cqw", lineHeight: 1.5 }}>
-                  {a.resumo[0].texto}
-                </p>
-              </div>
-            )}
-          </div>
-        </Slide>
-
-        <Slide
-          titulo="Motivos de encerramento no mês"
-          subtitulo={`${a.mesRotulo} · ${a.doMes.length} contratos`}
-          rodape={rodape}
-          acao={
-            <BotaoCopiar
-              html={tabelaHtml(
-                colunasMotivo,
-                linhasMes,
-                totalMes,
-                `Motivos de encerramento — ${a.mesRotulo}`
-              )}
-              texto={tabelaTexto(
-                colunasMotivo,
-                linhasMes,
-                totalMes,
-                `Motivos de encerramento — ${a.mesRotulo}`
-              )}
-            />
-          }
-        >
-          <TabelaSlide
-            colunas={colunasMotivo.map((c, i) => ({
-              titulo: c.titulo,
-              largura: largurasMotivo[i],
-            }))}
-            linhas={linhasMes}
-            total={a.doMes.length > 0 ? totalMes : null}
-          />
-        </Slide>
-
-        <Slide
-          titulo="Motivos no acumulado do ano"
-          subtitulo={`${a.acumuladoRotulo} · ${a.doAcumulado.length} contratos`}
-          rodape={rodape}
-          acao={
-            <BotaoCopiar
-              html={tabelaHtml(
-                colunasMotivo,
-                linhasAcumulado,
-                totalAcumulado,
-                `Motivos no acumulado — ${a.acumuladoRotulo}`
-              )}
-              texto={tabelaTexto(
-                colunasMotivo,
-                linhasAcumulado,
-                totalAcumulado,
-                `Motivos no acumulado — ${a.acumuladoRotulo}`
-              )}
-            />
-          }
-        >
-          <TabelaSlide
-            colunas={colunasMotivo.map((c, i) => ({
-              titulo: c.titulo,
-              largura: largurasMotivo[i],
-            }))}
-            linhas={linhasAcumulado}
-            total={a.doAcumulado.length > 0 ? totalAcumulado : null}
-          />
-        </Slide>
-
-        <Slide
-          titulo="Motivo por gerente de projeto"
-          subtitulo={`${a.mesRotulo} · somente o mês de referência`}
-          rodape={rodape}
-          acao={
-            <BotaoCopiar
-              html={tabelaHtml(
-                colunasCruz,
-                linhasCruz,
-                totalCruz,
-                `Motivo por gerente — ${a.mesRotulo}`
-              )}
-              texto={tabelaTexto(
-                colunasCruz,
-                linhasCruz,
-                totalCruz,
-                `Motivo por gerente — ${a.mesRotulo}`
-              )}
-            />
-          }
-        >
-          <TabelaSlide
-            colunas={colunasCruz.map((c, i) => ({ titulo: c.titulo, largura: largurasCruz[i] }))}
-            linhas={linhasCruz}
-            total={a.doMes.length > 0 ? totalCruz : null}
-          />
-        </Slide>
-
-        <Slide
-          titulo="Resumo executivo do mês"
-          subtitulo={a.mesRotulo}
-          rodape={rodape}
-          acao={<BotaoCopiar rotulo="Copiar texto" html={htmlResumo} texto={textoResumo} />}
-        >
-          <div className="grid grid-cols-2 gap-x-[3cqw] gap-y-[1.8cqw]">
-            {a.resumo.map((p) => (
-              <div key={p.titulo}>
-                <h3
-                  className="font-semibold tracking-wide text-pwr-orange uppercase"
-                  style={{ fontSize: "1.15cqw" }}
-                >
-                  {p.titulo}
-                </h3>
-                <p
-                  className="text-pwr-blue/80"
-                  style={{ fontSize: "1.3cqw", lineHeight: 1.5, marginTop: "0.4cqw" }}
-                >
-                  {p.texto}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Slide>
+      <div className="mt-4">
+        <SlideMotivos
+          periodo={`${nomeMes.toUpperCase()} ${a.ano}`}
+          notaBase={`Base SPWR · ${ROTULO_BASE_VALOR[a.baseValor]} · atualizada em ${new Date(base.gerado).toLocaleDateString("pt-BR")}`}
+          kpis={kpis}
+          paineis={[
+            {
+              numero: "01",
+              titulo: `Motivo — ${nomeMes}`,
+              nota: `${a.doMes.length} contratos`,
+              linhas: linhasMes,
+              rotuloTotal: `Total ${nomeMes}`,
+              totalContratos: a.doMes.length,
+              totalReceita: a.receitaMes,
+            },
+            {
+              numero: "02",
+              titulo: `Motivo — Jan a ${nomeMesAcumulado.slice(0, 3)}`,
+              nota: `${a.doAcumulado.length} contratos`,
+              linhas: linhasAcumulado,
+              rotuloTotal: "Total geral",
+              totalContratos: a.doAcumulado.length,
+              totalReceita: a.receitaAcumulada,
+            },
+            {
+              numero: "03",
+              titulo: `Gerente de Projeto — ${nomeMes}`,
+              nota: `${gerentesMes.length} GPs`,
+              linhas: linhasGerentes,
+              rotuloTotal: `Total ${nomeMes}`,
+              totalContratos: a.doMes.length,
+              totalReceita: a.receitaMes,
+            },
+          ]}
+          leitura={leitura}
+        />
       </div>
     </>
   );

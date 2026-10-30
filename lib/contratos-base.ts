@@ -67,6 +67,24 @@ export function valorNumerico(valor: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+// Com centavos: no slide os numeros aparecem fechados ate o centavo, porque
+// e material que vai para reuniao e precisa bater com a planilha na conferencia.
+export function formatarMoedaExata(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export function formatarNumeroExato(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export function formatarMoeda(valor: number): string {
   return valor.toLocaleString("pt-BR", {
     style: "currency",
