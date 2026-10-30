@@ -101,9 +101,8 @@ export default async function EncerramentosPage({
   const umDecimal = (n: number) => n.toFixed(1).replace(".", ",");
 
   return (
-    <div className="px-6 py-6">
-      <h1 className="text-lg font-semibold text-pwr-dark-blue">Encerramentos</h1>
-      <p className="mt-0.5 text-xs text-pwr-blue/50">
+    <>
+      <p className="mt-3 text-xs text-pwr-blue/50">
         {periodo} — projetos com término real no período. Clique numa coluna ou fatia dos
         gráficos para filtrar. Base de {new Date(base.gerado).toLocaleDateString("pt-BR")}.
       </p>
@@ -209,6 +208,6 @@ export default async function EncerramentosPage({
           período e não aparecem aqui — vale conferir se foram mesmo encerrados.
         </p>
       )}
-    </div>
+    </>
   );
 }

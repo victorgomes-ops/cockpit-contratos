@@ -304,6 +304,88 @@ export function duracaoMediaMeses(contratos: ContratoBase[]): {
   };
 }
 
+// "Receita encerrada" pode sair de duas colunas da planilha e elas respondem
+// perguntas diferentes: Parcela Fechada e o quanto para de entrar por mes,
+// Receita Recorrente Anual e o quanto para de entrar no ano. Em vez de
+// escolher por conta propria, a tela expoe as duas.
+export type BaseValor = "parcela" | "recorrente";
+
+export const ROTULO_BASE_VALOR: Record<BaseValor, string> = {
+  parcela: "Parcela fechada (mensal)",
+  recorrente: "Receita recorrente (anual)",
+};
+
+export function normalizarBaseValor(valor: string | undefined): BaseValor {
+  return valor === "recorrente" ? "recorrente" : "parcela";
+}
+
+export function valorEncerrado(contrato: ContratoBase, base: BaseValor): number {
+  return valorNumerico(base === "parcela" ? contrato.parcelaFechada : contrato.receitaRecorrente);
+}
+
+// Intervalo fechado de meses dentro de um ano, para o acumulado jan..X.
+export function filtrarPorIntervalo(
+  campo: CampoData,
+  ano: string,
+  mesDe: number,
+  mesAte: number,
+  interno: FiltroInterno
+): ContratoBase[] {
+  return base.contratos
+    .filter((c) => {
+      if (anoDe(c[campo]) !== ano) return false;
+      const ma = mesAnoDe(c[campo]);
+      if (!ma) return false;
+      const m = Number(ma.slice(5, 7));
+      return m >= mesDe && m <= mesAte;
+    })
+    .filter((c) => (interno === "todos" ? true : interno === "sim" ? c.interno : !c.interno))
+    .sort((a, b) => {
+      const da = mesAnoDe(a[campo]) ?? "";
+      const db = mesAnoDe(b[campo]) ?? "";
+      if (da !== db) return da.localeCompare(db);
+      return diaDe(a[campo]) - diaDe(b[campo]);
+    });
+}
+
+export type FatiaValor = { rotulo: string; contratos: number; receita: number };
+
+export function agruparComValor(
+  contratos: ContratoBase[],
+  chave: (c: ContratoBase) => string,
+  base: BaseValor
+): FatiaValor[] {
+  const mapa = new Map<string, FatiaValor>();
+  for (const c of contratos) {
+    const k = rotuloDe(chave(c));
+    const atual = mapa.get(k) ?? { rotulo: k, contratos: 0, receita: 0 };
+    atual.contratos += 1;
+    atual.receita += valorEncerrado(c, base);
+    mapa.set(k, atual);
+  }
+  return Array.from(mapa.values()).sort(
+    (a, b) => b.contratos - a.contratos || b.receita - a.receita
+  );
+}
+
+export function somarValorEncerrado(contratos: ContratoBase[], base: BaseValor): number {
+  return contratos.reduce((t, c) => t + valorEncerrado(c, base), 0);
+}
+
+// Mes padrao da tela: o ultimo com encerramento registrado no ano, para a
+// pagina abrir em cima de dados em vez de um mes vazio.
+export function ultimoMesComDados(campo: CampoData, ano: string): number {
+  let ultimo = 0;
+  for (const c of base.contratos) {
+    if (anoDe(c[campo]) !== ano) continue;
+    const ma = mesAnoDe(c[campo]);
+    if (!ma) continue;
+    const m = Number(ma.slice(5, 7));
+    if (m > ultimo) ultimo = m;
+  }
+  return ultimo || new Date().getMonth() + 1;
+}
+
 // Doze posicoes, janeiro a dezembro. Espera uma lista ja restrita a um ano.
 export function contagemPorMes(contratos: ContratoBase[], campo: CampoData): number[] {
   const meses = new Array<number>(12).fill(0);

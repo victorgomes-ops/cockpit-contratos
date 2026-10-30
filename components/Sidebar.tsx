@@ -62,7 +62,9 @@ export function Sidebar() {
       <nav className="flex-1 px-1.5 py-1.5">
         <ul className="flex flex-col gap-0.5">
           {secoes.map(({ href, label, Icone }) => {
-            const ativo = pathname === href;
+            // startsWith para a secao seguir marcada nas sub-abas
+            // (/encerramentos/motivos ainda e Encerramentos).
+            const ativo = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
             return (
               <li key={href}>
                 <Link
