@@ -1,3 +1,4 @@
+import { LogoPwr } from "@/components/LogoPwr";
 import { type LinhaPainel, PainelBarras } from "@/components/PainelBarras";
 import type { Leitura } from "@/lib/leitura-executiva";
 
@@ -48,7 +49,7 @@ export function SlideMotivos({
 }) {
   return (
     <section
-      className="slide relative flex w-full flex-col overflow-hidden bg-white"
+      className="slide relative flex w-full flex-col overflow-hidden bg-white font-pwr"
       style={{
         aspectRatio: "16 / 9",
         containerType: "inline-size",
@@ -59,13 +60,12 @@ export function SlideMotivos({
         className="flex shrink-0 items-center justify-between gap-4 bg-pwr-dark-blue"
         style={{ padding: "1.1cqw 2cqw" }}
       >
-        <div className="flex min-w-0 items-center" style={{ gap: "1cqw" }}>
+        <div className="flex min-w-0 items-center" style={{ gap: "1.3cqw" }}>
+          <LogoPwr altura="2.9cqw" tema="escuro" />
           <span
-            className="flex shrink-0 items-center justify-center rounded-full font-bold text-white"
-            style={{ width: "2.4cqw", height: "2.4cqw", background: "#FF5B00", fontSize: "1.3cqw" }}
-          >
-            ›
-          </span>
+            className="shrink-0 self-stretch"
+            style={{ width: "0.1cqw", background: "rgba(255,255,255,0.18)" }}
+          />
           <div className="min-w-0">
             <h2
               className="truncate leading-tight font-bold text-white"

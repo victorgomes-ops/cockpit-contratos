@@ -7,6 +7,9 @@
   --pwr-dark-blue: #05244f;
   --pwr-blue: #273a76;
   --pwr-light-blue: #3c58b4;
+  /* Tons de apoio do guia de identidade: sombras e contrastes. */
+  --pwr-orange-dark: #9a3500;
+  --pwr-orange-deeper: #622000;
 }
 
 @theme inline {
@@ -16,8 +19,11 @@
   --color-pwr-dark-blue: var(--pwr-dark-blue);
   --color-pwr-blue: var(--pwr-blue);
   --color-pwr-light-blue: var(--pwr-light-blue);
+  --color-pwr-orange-dark: var(--pwr-orange-dark);
+  --color-pwr-orange-deeper: var(--pwr-orange-deeper);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pwr: var(--font-montserrat);
 }
 
 body {

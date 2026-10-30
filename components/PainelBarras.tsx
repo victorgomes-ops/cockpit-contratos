@@ -1,7 +1,13 @@
 import { formatarNumeroExato } from "@/lib/contratos-base";
 
 const LARANJA = "#FF5B00";
-const AZUL = "#2A4BA0";
+const AZUL = "#273A76";
+
+// Gradiente leve, com as cores de apoio do guia de identidade. A segunda
+// parada fica em 170% de proposito: so o inicio da rampa aparece na barra,
+// entao o tom escurece de leve em vez de virar outra cor.
+const GRADIENTE_DESTAQUE = "linear-gradient(90deg, #FF5B00 0%, #9A3500 170%)";
+const GRADIENTE_PADRAO = "linear-gradient(90deg, #3C58B4 0%, #273A76 170%)";
 
 export type LinhaPainel = { rotulo: string; contratos: number; receita: number };
 
@@ -59,7 +65,7 @@ export function PainelBarras({
                   Cliente" nao cabe numa linha e truncado perde o sentido. */}
               <span
                 className={`line-clamp-2 ${destaque ? "font-semibold text-pwr-orange" : "text-pwr-blue/75"}`}
-                style={{ width: "32%", fontSize: "0.92cqw", lineHeight: 1.15 }}
+                style={{ width: "38%", fontSize: "0.85cqw", lineHeight: 1.18 }}
                 title={l.rotulo}
               >
                 {l.rotulo}
@@ -72,7 +78,7 @@ export function PainelBarras({
                   fontSize: "0.78cqw",
                   padding: "0.12cqw 0",
                   borderRadius: "0.2cqw",
-                  backgroundColor: destaque ? LARANJA : "rgba(42,75,160,0.10)",
+                  backgroundColor: destaque ? LARANJA : "rgba(60,88,180,0.12)",
                   color: destaque ? "#fff" : AZUL,
                 }}
               >
@@ -88,20 +94,20 @@ export function PainelBarras({
                   style={{
                     width: `${Math.max((l.receita / maior) * 100, 1.5)}%`,
                     borderRadius: "0.15cqw",
-                    backgroundColor: destaque ? LARANJA : AZUL,
+                    backgroundImage: destaque ? GRADIENTE_DESTAQUE : GRADIENTE_PADRAO,
                   }}
                 />
               </span>
 
               <span
                 className="shrink-0 text-right font-semibold text-pwr-dark-blue tabular-nums"
-                style={{ width: "7.5cqw", fontSize: "0.9cqw" }}
+                style={{ width: "6.6cqw", fontSize: "0.86cqw" }}
               >
                 {formatarNumeroExato(l.receita)}
               </span>
               <span
                 className="shrink-0 text-right text-pwr-blue/45 tabular-nums"
-                style={{ width: "3cqw", fontSize: "0.75cqw" }}
+                style={{ width: "2.6cqw", fontSize: "0.72cqw" }}
               >
                 {pct.toFixed(1).replace(".", ",")}%
               </span>
@@ -121,7 +127,7 @@ export function PainelBarras({
       >
         <span
           className="truncate font-semibold tracking-wide text-pwr-dark-blue uppercase"
-          style={{ width: "32%", fontSize: "0.78cqw" }}
+          style={{ width: "38%", fontSize: "0.75cqw" }}
         >
           {rotuloTotal}
         </span>
