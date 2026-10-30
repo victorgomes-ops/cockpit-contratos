@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PWR Gestão — Identidade Visual</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --orange:#FF5B00;--orange-dark:#9A3500;--orange-deeper:#622000;
+    --navy:#05244F;--blue:#273A76;--blue-light:#3C58B4;
+    --white:#fff;--gray:#F4F5F7;--text:#1a1a2e;
+  }
+  body{font-family:'Montserrat',sans-serif;background:#F0F2F5;color:var(--text)}
+
+  nav{background:var(--navy);padding:16px 40px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+  nav svg{flex-shrink:0}
+  nav span{color:#fff;font-weight:800;font-size:18px;letter-spacing:1px}
+  nav small{color:var(--orange);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:1px}
+
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);padding:60px 40px;text-align:center;color:#fff}
+  .hero h1{font-size:36px;font-weight:900;letter-spacing:2px;margin-bottom:8px}
+  .hero p{color:rgba(255,255,255,.6);font-size:14px;font-weight:400;letter-spacing:1px;text-transform:uppercase}
+
+  .container{max-width:1000px;margin:0 auto;padding:40px 24px}
+  section{margin-bottom:56px}
+  .section-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+  .section-heading{font-size:26px;font-weight:800;color:var(--navy);margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid var(--orange)}
+
+  /* LOGO GRID */
+  .logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .logo-card{border-radius:12px;padding:36px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:160px;position:relative;overflow:hidden}
+  .logo-card.white-bg{background:#fff;border:1px solid #ddd}
+  .logo-card.black-bg{background:#000}
+  .logo-card.color-bg{background:var(--gray);border:1px solid #ddd}
+  .logo-card.dark-bg{background:var(--navy)}
+  .logo-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:.5;position:absolute;bottom:12px}
+  .logo-card.white-bg .logo-label,.logo-card.color-bg .logo-label{color:var(--navy)}
+  .logo-card.black-bg .logo-label,.logo-card.dark-bg .logo-label{color:#fff}
+  .pwr-logo{display:flex;align-items:center;gap:10px}
+  .pwr-text-wrap{display:flex;flex-direction:column}
+  .pwr-wordmark{font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;line-height:1;letter-spacing:-1px}
+  .pwr-gestao{font-family:'Montserrat',sans-serif;font-weight:500;font-size:11px;letter-spacing:5px;text-transform:uppercase;margin-top:2px}
+
+  /* COLORS */
+  .colors-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .color-card{border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .color-swatch{height:90px}
+  .color-info{background:#fff;padding:12px 14px}
+  .color-name{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px}
+  .color-hex{font-size:13px;font-weight:800;font-family:monospace;color:var(--orange)}
+  .color-rgb{font-size:10px;color:#888;margin-top:2px}
+  .color-role{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#aaa;margin-top:6px}
+
+  /* TYPOGRAPHY */
+  .typo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .typo-card{background:#fff;border-radius:12px;padding:24px;border-left:4px solid var(--orange)}
+  .typo-card h3{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:14px}
+  .t-display{font-size:36px;font-weight:900;color:var(--navy);line-height:1.1}
+  .t-h1{font-size:28px;font-weight:800;color:var(--navy)}
+  .t-h2{font-size:22px;font-weight:700;color:var(--navy)}
+  .t-h3{font-size:17px;font-weight:600;color:var(--navy)}
+  .t-body{font-size:14px;font-weight:400;color:#444;line-height:1.6}
+  .t-small{font-size:11px;font-weight:500;color:#888;letter-spacing:1px;text-transform:uppercase}
+  .t-weight-row{display:flex;flex-direction:column;gap:8px}
+  .t-weight-item{display:flex;align-items:baseline;gap:12px}
+  .t-weight-item span:first-child{font-size:10px;color:#aaa;width:40px;flex-shrink:0}
+
+  /* USAGE */
+  .report-sample{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+  .report-top{background:var(--navy);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+  .report-body{padding:24px 28px}
+  .report-title{color:#fff;font-size:20px;font-weight:800;letter-spacing:1px}
+  .report-sub{color:rgba(255,255,255,.5);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+  .report-date{color:rgba(255,255,255,.4);font-size:11px}
+  .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .kpi{background:var(--gray);border-radius:8px;padding:14px;border-top:3px solid var(--orange)}
+  .kpi-val{font-size:24px;font-weight:900;color:var(--navy)}
+  .kpi-lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;margin-top:3px}
+  .report-divider{height:2px;background:linear-gradient(90deg,var(--orange),var(--blue-light));border-radius:2px;margin:16px 0}
+  .report-p{font-size:12px;color:#555;line-height:1.7}
+  .tag{display:inline-block;background:var(--orange);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
+
+  /* DO/DONT */
+  .do-dont{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .do-card{border-radius:12px;overflow:hidden}
+  .do-card .dh{padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff}
+  .do-card.do .dh{background:#27ae60}
+  .do-card.dont .dh{background:#e74c3c}
+  .do-card .db{background:#fff;padding:16px;font-size:12px;color:#555;line-height:1.6;border:1px solid #eee;border-top:none;border-radius:0 0 12px 12px}
+
+  .code-block{background:var(--navy);border-radius:12px;padding:24px}
+  .code-block pre{color:#aac8ff;font-size:12px;line-height:1.9;white-space:pre-wrap}
+
+  footer{background:var(--navy);color:rgba(255,255,255,.4);text-align:center;padding:24px;font-size:11px;letter-spacing:1px}
+  footer strong{color:var(--orange)}
+
+  @media(max-width:640px){
+    .logo-grid,.typo-grid,.do-dont{grid-template-columns:1fr}
+    .colors-grid{grid-template-columns:repeat(2,1fr)}
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <svg width="32" height="32" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="15" fill="none" stroke="#FF5B00" stroke-width="2.5"/>
+    <polygon points="11,9 11,23 24,16" fill="#FF5B00"/>
+  </svg>
+  <div>
+    <span>PWR GESTÃO</span>
+    <small>Guia de Identidade Visual</small>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>IDENTIDADE VISUAL</h1>
+  <p>Manual de uso da marca · PWR Gestão · Consultoria</p>
+</div>
+
+<div class="container">
+
+  <!-- 01 LOGOS -->
+  <section>
+    <p class="section-title">01 — Marca</p>
+    <h2 class="section-heading">Versões do Logotipo</h2>
+    <div class="logo-grid">
+
+      <div class="logo-card color-bg">
+        <div class="pwr-logo">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="27" fill="none" stroke="#FF5B00" stroke-width="3.5"/>
+            <circle cx="29" cy="29" r="20" fill="#FF5B00"/>
+            <polyline points="23,21 35,29 23,37" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="pwr-text-wrap">
+            <span class="pwr-wordmark" style="color:var(--navy)">pwr</span>
+            <span class="pwr-gestao" style="color:var(--navy)">Gestão</span>
+          </div>
+        </div>
+        <span class="logo-label">Versão Colorida — Fundo Claro</span>
+      </div>
+
+      <div class="logo-card dark-bg">
+        <div class="pwr-logo">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="27" fill="none" stroke="#FF5B00" stroke-width="3.5"/>
+            <circle cx="29" cy="29" r="20" fill="#FF5B00"/>
+            <polyline points="23,21 35,29 23,37" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="pwr-text-wrap">
+            <span class="pwr-wordmark" style="color:#fff">pwr</span>
+            <span class="pwr-gestao" style="color:rgba(255,255,255,.7)">Gestão</span>
+          </div>
+        </div>
+        <span class="logo-label">Versão Colorida — Fundo Escuro</span>
+      </div>
+
+      <div class="logo-card black-bg">
+        <div class="pwr-logo">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="27" fill="none" stroke="#fff" stroke-width="3.5"/>
+            <circle cx="29" cy="29" r="20" fill="#fff"/>
+            <polyline points="23,21 35,29 23,37" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="pwr-text-wrap">
+            <span class="pwr-wordmark" style="color:#fff">pwr</span>
+            <span class="pwr-gestao" style="color:rgba(255,255,255,.7)">Gestão</span>
+          </div>
+        </div>
+        <span class="logo-label">Monocromática Branca</span>
+      </div>
+
+      <div class="logo-card white-bg">
+        <div class="pwr-logo">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="27" fill="none" stroke="#111" stroke-width="3.5"/>
+            <circle cx="29" cy="29" r="20" fill="#111"/>
+            <polyline points="23,21 35,29 23,37" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="pwr-text-wrap">
+            <span class="pwr-wordmark" style="color:#111">pwr</span>
+            <span class="pwr-gestao" style="color:#555">Gestão</span>
+          </div>
+        </div>
+        <span class="logo-label">Monocromática Preta</span>
+      </div>
+
+    </div>
+    <p style="font-size:11px;color:#999;margin-top:12px;text-align:center">⚠️ Substitua as representações acima pelos arquivos originais (PNG/SVG) ao usar em materiais.</p>
+  </section>
+
+  <!-- 02 CORES -->
+  <section>
+    <p class="section-title">02 — Cores</p>
+    <h2 class="section-heading">Paleta de Cores</h2>
+    <div class="colors-grid">
+      <div class="color-card"><div class="color-swatch" style="background:#FF5B00"></div><div class="color-info"><div class="color-name">Laranja PWR</div><div class="color-hex">#FF5B00</div><div class="color-rgb">RGB 255 · 91 · 0</div><div class="color-role">Cor Primária · Destaque</div></div></div>
+      <div class="color-card"><div class="color-swatch" style="background:#05244F"></div><div class="color-info"><div class="color-name">Azul Profundo</div><div class="color-hex">#05244F</div><div class="color-rgb">RGB 5 · 36 · 79</div><div class="color-role">Cor Primária · Fundo</div></div></div>
+      <div class="color-card"><div class="color-swatch" style="background:#273A76"></div><div class="color-info"><div class="color-name">Azul Médio</div><div class="color-hex">#273A76</div><div class="color-rgb">RGB 39 · 58 · 118</div><div class="color-role">Secundária · Cabeçalhos</div></div></div>
+      <div class="color-card"><div class="color-swatch" style="background:#3C58B4"></div><div class="color-info"><div class="color-name">Azul Claro</div><div class="color-hex">#3C58B4</div><div class="color-rgb">RGB 60 · 88 · 180</div><div class="color-role">Secundária · Gradientes</div></div></div>
+      <div class="color-card"><div class="color-swatch" style="background:#9A3500"></div><div class="color-info"><div class="color-name">Laranja Escuro</div><div class="color-hex">#9A3500</div><div class="color-rgb">RGB 154 · 53 · 0</div><div class="color-role">Apoio · Sombras</div></div></div>
+      <div class="color-card"><div class="color-swatch" style="background:#622000"></div><div class="color-info"><div class="color-name">Laranja Profundo</div><div class="color-hex">#622000</div><div class="color-rgb">RGB 95 · 32 · 0</div><div class="color-role">Apoio · Contrastes</div></div></div>
+    </div>
+  </section>
+
+  <!-- 03 TIPOGRAFIA -->
+  <section>
+    <p class="section-title">03 — Tipografia</p>
+    <h2 class="section-heading">Fontes e Hierarquia</h2>
+    <div class="typo-grid">
+      <div class="typo-card">
+        <h3>Hierarquia de Texto</h3>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div class="t-display">Display</div><div class="t-small" style="margin-top:2px">Montserrat Black 900 · 36px+</div></div>
+          <div><div class="t-h1">Título H1</div><div class="t-small" style="margin-top:2px">Montserrat ExtraBold 800 · 28px</div></div>
+          <div><div class="t-h2">Título H2</div><div class="t-small" style="margin-top:2px">Montserrat Bold 700 · 22px</div></div>
+          <div><div class="t-h3">Título H3</div><div class="t-small" style="margin-top:2px">Montserrat SemiBold 600 · 17px</div></div>
+          <div><div class="t-body">Texto corrido — Montserrat Regular 400, tamanho 14px. Ideal para parágrafos, descrições e conteúdo geral.</div></div>
+          <div><div class="t-small">Legenda / Label · 500 · 11px</div></div>
+        </div>
+      </div>
+      <div class="typo-card">
+        <h3>Pesos Disponíveis</h3>
+        <div class="t-weight-row">
+          <div class="t-weight-item"><span>300</span><span style="font-weight:300;font-size:18px;color:var(--navy)">Montserrat Light</span></div>
+          <div class="t-weight-item"><span>400</span><span style="font-weight:400;font-size:18px;color:var(--navy)">Montserrat Regular</span></div>
+          <div class="t-weight-item"><span>500</span><span style="font-weight:500;font-size:18px;color:var(--navy)">Montserrat Medium</span></div>
+          <div class="t-weight-item"><span>600</span><span style="font-weight:600;font-size:18px;color:var(--navy)">Montserrat SemiBold</span></div>
+          <div class="t-weight-item"><span>700</span><span style="font-weight:700;font-size:18px;color:var(--navy)">Montserrat Bold</span></div>
+          <div class="t-weight-item"><span>800</span><span style="font-weight:800;font-size:18px;color:var(--navy)">Montserrat ExtraBold</span></div>
+          <div class="t-weight-item"><span>900</span><span style="font-weight:900;font-size:18px;color:var(--navy)">Montserrat Black</span></div>
+        </div>
+        <div style="margin-top:20px;background:var(--gray);border-radius:8px;padding:12px">
+          <p style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--orange);text-transform:uppercase;margin-bottom:6px">Import Google Fonts</p>
+          <code style="font-size:10px;color:#555;word-break:break-all">@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 EXEMPLO RELATÓRIO -->
+  <section>
+    <p class="section-title">04 — Exemplos de Uso</p>
+    <h2 class="section-heading">Modelo de Relatório HTML</h2>
+    <div class="report-sample">
+      <div class="report-top">
+        <div>
+          <div class="report-title">RELATÓRIO GERENCIAL</div>
+          <div class="report-sub">Análise de Desempenho · Q1 2025</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="16" fill="none" stroke="#FF5B00" stroke-width="2.5"/>
+            <circle cx="18" cy="18" r="11" fill="#FF5B00"/>
+            <polyline points="13,12 22,18 13,24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:1px">pwr</div>
+            <div style="color:rgba(255,255,255,.5);font-size:8px;letter-spacing:3px">GESTÃO</div>
+          </div>
+        </div>
+      </div>
+      <div class="report-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val">R$ 2,4M</div><div class="kpi-lbl">Faturamento</div></div>
+          <div class="kpi"><div class="kpi-val">94%</div><div class="kpi-lbl">Satisfação</div></div>
+          <div class="kpi"><div class="kpi-val">+18%</div><div class="kpi-lbl">Crescimento</div></div>
+        </div>
+        <div class="report-divider"></div>
+        <p class="report-p">Este relatório apresenta os resultados consolidados do primeiro trimestre, com análise comparativa e recomendações estratégicas para o próximo período.</p>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag">Consultoria</span>
+          <span class="tag" style="background:var(--blue)">Q1 2025</span>
+          <span class="tag" style="background:var(--navy)">Gestão</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 BOAS PRÁTICAS -->
+  <section>
+    <p class="section-title">05 — Boas Práticas</p>
+    <h2 class="section-heading">Uso Correto da Marca</h2>
+    <div class="do-dont">
+      <div class="do-card do">
+        <div class="dh">✔ Use assim</div>
+        <div class="db">
+          <ul style="padding-left:16px;line-height:2">
+            <li>Logo colorida em fundos neutros (branco, cinza claro)</li>
+            <li>Logo branca em fundos escuros e azul profundo</li>
+            <li>Laranja <strong>#FF5B00</strong> para destaques e CTAs</li>
+            <li>Azul <strong>#05244F</strong> como cor de fundo principal</li>
+            <li>Fonte Montserrat em todos os materiais</li>
+          </ul>
+        </div>
+      </div>
+      <div class="do-card dont">
+        <div class="dh">✘ Evite</div>
+        <div class="db">
+          <ul style="padding-left:16px;line-height:2">
+            <li>Distorcer ou redimensionar o logo de forma desproporcional</li>
+            <li>Usar cores fora da paleta oficial</li>
+            <li>Colocar o logo sobre imagens sem fundo adequado</li>
+            <li>Trocar o laranja por outras cores de destaque</li>
+            <li>Misturar fontes diferentes com a Montserrat</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 VARIÁVEIS CSS -->
+  <section>
+    <p class="section-title">06 — Referência CSS</p>
+    <h2 class="section-heading">Variáveis para Relatórios</h2>
+    <div class="code-block">
+      <pre>:root {
+  /* ── Cores PWR Gestão ────────────────── */
+  --pwr-orange:        #FF5B00;   /* Primária · destaque  */
+  --pwr-orange-dark:   #9A3500;   /* Apoio · sombras      */
+  --pwr-orange-deeper: #622000;   /* Apoio · contrastes   */
+  --pwr-navy:          #05244F;   /* Primária · fundo     */
+  --pwr-blue:          #273A76;   /* Secundária · textos  */
+  --pwr-blue-light:    #3C58B4;   /* Secundária · gradient*/
+
+  /* ── Tipografia ─────────────────────── */
+  --pwr-font: 'Montserrat', sans-serif;
+}</pre>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <strong>PWR Gestão</strong> · Guia de Identidade Visual · Uso Interno
+</footer>
+
+</body>
+</html>

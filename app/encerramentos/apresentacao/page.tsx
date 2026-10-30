@@ -1,4 +1,5 @@
 import { BotaoCopiar } from "@/components/BotaoCopiar";
+import { BotaoCopiarImagem } from "@/components/BotaoCopiarImagem";
 import { FiltrosMotivos } from "@/components/FiltrosMotivos";
 import type { LinhaPainel } from "@/components/PainelBarras";
 import { type CartaoKpi, SlideMotivos } from "@/components/SlideMotivos";
@@ -191,11 +192,10 @@ export default async function ApresentacaoPage({
     <>
       <div className="nao-imprimir">
         <p className="mt-3 text-xs text-pwr-blue/50">
-          Um slide, 16:9, com os mesmos números da aba Motivos. Para levar ao PowerPoint:{" "}
-          <strong className="font-medium text-pwr-blue/70">Win+Shift+S</strong> recorta o slide e
-          cola como imagem, ou <strong className="font-medium text-pwr-blue/70">Ctrl+P</strong> →
-          Salvar como PDF em paisagem. Os botões abaixo colam as tabelas no PowerPoint como tabela
-          editável.
+          Um slide, 16:9, com os mesmos números da aba Motivos.{" "}
+          <strong className="font-medium text-pwr-blue/70">Copiar imagem do slide</strong> põe a
+          figura pronta na área de transferência — é só colar no PowerPoint. Se preferir os
+          números editáveis em vez da figura, use os botões de tabela ao lado.
         </p>
 
         <FiltrosMotivos
@@ -208,6 +208,11 @@ export default async function ApresentacaoPage({
         />
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
+          <BotaoCopiarImagem
+            alvo=".slide"
+            nomeArquivo={`encerramentos-${nomeMes.toLowerCase()}-${a.ano}.png`}
+          />
+          <span className="mx-1 h-5 w-px bg-pwr-dark-blue/15" />
           {blocos.map((b, i) => (
             <BotaoCopiar
               key={b.titulo}
