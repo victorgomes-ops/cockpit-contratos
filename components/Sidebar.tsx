@@ -27,7 +27,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`sticky top-0 flex h-dvh shrink-0 flex-col bg-pwr-dark-blue transition-[width] duration-200 ${
+      className={`nao-imprimir sticky top-0 flex h-dvh shrink-0 flex-col bg-pwr-dark-blue transition-[width] duration-200 ${
         aberta ? "w-52" : "w-[52px]"
       }`}
     >
