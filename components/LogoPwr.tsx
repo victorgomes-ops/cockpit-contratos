@@ -1,69 +1,80 @@
-// Logotipo oficial, reproduzido do guia de identidade: anel laranja, disco
-// laranja e a seta branca. As proporcoes do guia (marca 58, "pwr" 38, "Gestão"
-// 11 com 5px de espacamento) viram fracoes da altura, para a marca escalar
-// junto com o slide, que se mede em cqw.
+// Tracados do arquivo oficial, public/marca/pwr-logo-principal.svg (CorelDRAW,
+// vetor puro). Estao embutidos em vez de carregados como <img> porque em fundo
+// escuro o "pwr" (#273A76) e o "GESTÃO" (#4D4D4D) somem — a versao branca do
+// guia exige trocar esses dois preenchimentos, e <img> nao permite.
+// Ao atualizar a marca, troque o arquivo em public/marca e refaca estes
+// tracados a partir dele.
+
+const PROPORCAO = 8165.2 / 2588.85;
+
+// Marca: a seta e o anel. Laranja nas duas versoes.
+const MARCA = [
+  "M1892.94 1247.5l-212.82 -212.82c-0.12,0 -0.12,-0.12 -0.12,-0.12l-533.33 -533.33c-33.08,-33.08 -86.87,-33.08 -119.95,0l-212.81 212.81c-33.08,33.21 -33.08,86.87 0,120.07l473.42 473.3 -473.42 473.54c-33.21,33.08 -33.21,86.74 0,119.83l212.81 212.81c33.08,33.21 86.87,33.21 119.95,0l638.09 -637.96 108.18 -108.19c4.29,-4.29 8.09,-8.94 11.27,-13.97 21.32,-32.84 17.52,-77.19 -11.27,-105.98z",
+  "M1270.66 2361.45c-583.32,0 -1057.72,-474.4 -1057.72,-1057.72 0,-583.19 474.4,-1057.72 1057.72,-1057.72 583.2,0 1057.6,474.52 1057.6,1057.72 0,583.32 -474.4,1057.72 -1057.6,1057.72zm0 -2328.25c-701.8,0 -1270.66,568.86 -1270.66,1270.53 0,701.8 568.86,1270.66 1270.66,1270.66 701.67,0 1270.66,-568.86 1270.66,-1270.66 0,-701.67 -568.99,-1270.53 -1270.66,-1270.53z",
+];
+
+// A cauda diagonal sob o "p", tambem laranja.
+const CAUDA = "2884.98,2588.85 3361.71,2588.85 3361.71,2317.34";
+
+// Letras de "pwr".
+const PWR_PATHS = [
+  "M4174.88 870.01c0,-279.22 -188.43,-464.35 -411.17,-464.35 -222.87,0 -407.99,185.13 -407.99,464.35l0 6.37c0,279.35 185.12,464.48 407.99,464.48 222.74,0 411.17,-182.06 411.17,-464.48l0 -6.37zm-812.92 -596.18c116.15,-156.94 276.28,-273.1 524.14,-273.1 392.31,0 765.75,307.65 765.75,869.28l0 6.37c0,561.76 -367.19,869.41 -765.75,869.41 -254.23,0 -411.18,-116.27 -524.14,-251.17l0 721.89 -476.97 281.18 0 -2465.59 476.97 0 0 241.73z",
+  "M8128.97 499.76c-316.96,0 -511.52,191.5 -511.52,593.24l0 362.29c0,271.63 -477.09,271.63 -477.09,271.63l0 -1694.7 477.09 0 0 338.89c97.28,-232.3 254.11,-382.87 536.64,-370.38 0,0 24.99,499.03 0,499.03l-25.12 0z",
+];
+const PWR_POLY = "6578.6,1726.8 6148.68,1726.8 5825.47,694.32 5495.89,1726.8 5069.15,1726.8 4551.26,32.1 5034.6,32.1 5304.52,1052.2 5621.47,166.01 6032.53,166.01 6352.67,1055.26 6628.84,32.1 7102.87,32.1 ";
+
+// Letras de "GESTÃO".
+const GESTAO_PATHS = [
+  "M3865.27 2278.38c-79.03,0 -130.98,-56.24 -130.98,-130.24 0,-71.06 54.16,-131.1 130.24,-131.1 43.99,0 71.19,12.37 97.16,34.3l-28.18 33.57c-19.49,-16.54 -38.6,-26.95 -70.7,-26.95 -46.56,0 -81.97,40.31 -81.97,89.44 0,52.32 34.3,90.66 85.89,90.66 23.77,0 45.45,-7.6 61.02,-19.23l0 -47.29 -64.69 0 0 -38.47 107.69 0 0 105.98c-25,21.32 -60.65,39.33 -105.49,39.33z",
+  "M5204.91 2127.56c53.42,12.99 81.23,32.1 81.23,74.37 0,47.66 -37.13,75.71 -90.17,75.71 -38.72,0 -75.1,-13.35 -105.49,-40.43l26.71 -31.73c24.26,20.95 48.4,32.96 79.76,32.96 27.44,0 44.72,-12.75 44.72,-32.1 0,-18.5 -9.92,-28.18 -56.97,-39.08 -53.79,-12.99 -84.05,-28.79 -84.05,-75.72 0,-44.11 36.02,-73.63 86.25,-73.63 36.76,0 66.04,11.15 91.65,31.73l-23.89 33.58c-22.67,-17.04 -45.45,-25.98 -68.49,-25.98 -26.1,0 -41.17,13.35 -41.17,30.26 0,19.85 11.64,28.55 59.91,40.07z",
+  "M6513.42 2072.67l-43.25 101.08 86.99 0 -43.74 -101.08zm28.55 -72.17c-19.97,0 -39.08,-14.46 -51.95,-14.46 -10.54,0 -14.46,5.88 -19.85,18.13l-24.26 -7.23c7.97,-29.28 18.38,-45.09 40.56,-45.09 19.72,0 38.84,14.46 51.82,14.46 10.54,0 14.46,-5.88 19.85,-18.14l24.26 7.6c-7.96,28.91 -18.38,44.72 -40.43,44.72zm103.9 273.59l-46.93 0 -25.61 -61.01 -119.46 0 -26.1 61.01 -45.33 0 111 -254.47 41.29 0 111.13 254.47z",
+  "M7228.33 2057.96c-50.11,0 -85.16,40.07 -85.16,89.56 0,49.38 35.66,90.18 85.89,90.18 50.11,0 85.15,-40.19 85.15,-89.56 0,-49.5 -35.78,-90.18 -85.89,-90.18zm0 220.42c-77.68,0 -131.71,-58.81 -131.71,-130.24 0,-71.43 54.77,-131.1 132.44,-131.1 77.56,0 131.71,58.93 131.71,130.48 0,71.31 -54.89,130.85 -132.44,130.85z",
+];
+const GESTAO_POLY = [
+  "4634.33,2061.15 4491.47,2061.15 4491.47,2126.82 4618.03,2126.82 4618.03,2166.52 4491.47,2166.52 4491.47,2234.39 4636.04,2234.39 4636.04,2274.09 4447,2274.09 4447,2021.46 4634.33,2021.46 ",
+  "5858.43,2274.09 5813.71,2274.09 5813.71,2062.62 5733.58,2062.62 5733.58,2021.46 5938.43,2021.46 5938.43,2062.62 5858.43,2062.62 ",
+];
+
 export function LogoPwr({
   altura,
   tema = "escuro",
 }: {
-  /** Qualquer unidade CSS; o resto do logotipo e calculado a partir dela. */
+  /** Qualquer unidade CSS; a largura segue a proporcao do arquivo. */
   altura: string;
-  /** escuro = aplicado sobre fundo azul/preto. */
+  /** escuro = aplicado sobre fundo azul/preto, com os textos em branco. */
   tema?: "claro" | "escuro";
 }) {
-  const corPwr = tema === "escuro" ? "#fff" : "#05244F";
-  const corGestao = tema === "escuro" ? "rgba(255,255,255,0.7)" : "#05244F";
+  const escuro = tema === "escuro";
+  const corPwr = escuro ? "#FFFFFF" : "#273A76";
+  const corGestao = escuro ? "rgba(255,255,255,0.72)" : "#4D4D4D";
 
   return (
-    <span
-      className="flex shrink-0 items-center"
-      style={{ gap: `calc(${altura} * 0.18)` }}
+    <svg
+      viewBox="0 0 8165.2 2588.85"
+      style={{ height: altura, width: `calc(${altura} * ${PROPORCAO})` }}
+      className="shrink-0"
+      role="img"
       aria-label="PWR Gestão"
     >
-      <svg
-        viewBox="0 0 58 58"
-        style={{ width: altura, height: altura }}
-        className="shrink-0"
-        role="img"
-        aria-hidden="true"
-      >
-        <circle cx="29" cy="29" r="27" fill="none" stroke="#FF5B00" strokeWidth="3.5" />
-        <circle cx="29" cy="29" r="20" fill="#FF5B00" />
-        <polyline
-          points="23,21 35,29 23,37"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      {/* nonzero vem do arquivo; sem isso o anel e os vazados das letras enchem */}
+      <g fillRule="nonzero">
+        {MARCA.map((d) => (
+          <path key={d.slice(0, 24)} d={d} fill="#FF5B00" />
+        ))}
+        <polygon points={CAUDA} fill="#FF5B00" />
 
-      {/* leading-none cortaria a perna do "p" no peso 900. */}
-      <span className="flex flex-col font-pwr" style={{ lineHeight: 1.05 }}>
-        <span
-          style={{
-            fontSize: `calc(${altura} * 0.66)`,
-            fontWeight: 900,
-            letterSpacing: "-0.03em",
-            lineHeight: 1.2,
-            color: corPwr,
-          }}
-        >
-          pwr
-        </span>
-        <span
-          style={{
-            fontSize: `calc(${altura} * 0.19)`,
-            fontWeight: 500,
-            letterSpacing: "0.42em",
-            color: corGestao,
-            marginTop: `calc(${altura} * 0.07)`,
-          }}
-        >
-          GESTÃO
-        </span>
-      </span>
-    </span>
+        {PWR_PATHS.map((d) => (
+          <path key={d.slice(0, 24)} d={d} fill={corPwr} />
+        ))}
+        <polygon points={PWR_POLY} fill={corPwr} />
+
+        {GESTAO_PATHS.map((d) => (
+          <path key={d.slice(0, 24)} d={d} fill={corGestao} />
+        ))}
+        {GESTAO_POLY.map((p) => (
+          <polygon key={p.slice(0, 24)} points={p} fill={corGestao} />
+        ))}
+      </g>
+    </svg>
   );
 }

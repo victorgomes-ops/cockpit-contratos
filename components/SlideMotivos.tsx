@@ -61,7 +61,7 @@ export function SlideMotivos({
         style={{ padding: "1.1cqw 2cqw" }}
       >
         <div className="flex min-w-0 items-center" style={{ gap: "1.3cqw" }}>
-          <LogoPwr altura="2.9cqw" tema="escuro" />
+          <LogoPwr altura="3.4cqw" tema="escuro" />
           <span
             className="shrink-0 self-stretch"
             style={{ width: "0.1cqw", background: "rgba(255,255,255,0.18)" }}

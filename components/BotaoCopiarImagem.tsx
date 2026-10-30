@@ -15,15 +15,22 @@ function paraBase64(buffer: ArrayBuffer): string {
   return btoa(binario);
 }
 
-let cacheFontes: string | null = null;
+// Guarda a promessa, nao o resultado: clicar enquanto o pre-aquecimento ainda
+// roda tem que esperar o mesmo trabalho, nao disparar um segundo em paralelo
+// — duas varreduras concorrentes brigam pelas mesmas dezenas de requisicoes
+// e a geracao trava.
+let cacheFontes: Promise<string> | null = null;
+
+function cssDasFontes(): Promise<string> {
+  if (!cacheFontes) cacheFontes = construirCssDasFontes();
+  return cacheFontes;
+}
 
 // A biblioteca sabe descobrir as fontes sozinha, mas para isso varre todas as
 // folhas de estilo da pagina e trava — em desenvolvimento o CSS do Tailwind e
 // enorme. Como o slide usa uma fonte so, montamos o @font-face da Montserrat
 // e entregamos pronto, o que tambem deixa a geracao bem mais rapida.
-async function cssDasFontes(): Promise<string> {
-  if (cacheFontes !== null) return cacheFontes;
-
+async function construirCssDasFontes(): Promise<string> {
   // A url dentro do @font-face e relativa a folha de estilo ("../media/x.woff2"),
   // nao a pagina. Resolver contra o endereco errado da 404 em silencio e a
   // imagem sai com a fonte do sistema.
@@ -72,8 +79,7 @@ async function cssDasFontes(): Promise<string> {
     })
   );
 
-  cacheFontes = resolvidas.join("\n");
-  return cacheFontes;
+  return resolvidas.join("\n");
 }
 
 export function BotaoCopiarImagem({
